@@ -4,6 +4,7 @@
 #include <fstream>
 #include <filesystem> 
 
+#include "../headers/db.h"
 
 using std::cout;       
 using std::cin;        
@@ -68,6 +69,11 @@ void handle_command(const string& command) {
 
 int main() {
     const string DB_DIR = "db";
+    DB db = DB();
+    db.header.totalDataHeadersCount = 2137;
+    db.writeStructure();
+
+
 
     if (!fs::exists(DB_DIR)) {
         fs::create_directory(DB_DIR);
@@ -93,4 +99,3 @@ int main() {
         //cout << "Nieznana komenda: " << command << "\n";
     }
     return 0;
-}
