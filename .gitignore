@@ -1,2 +1,3 @@
 back-end/bin/
-back-end/db.stdb
+back-end/db/
+.vscode/
