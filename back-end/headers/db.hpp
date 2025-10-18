@@ -1,16 +1,16 @@
 #ifndef DB_H
 #define DB_H
 
+#include <cstdint>
+#include <string>
+
+#include "../headers/table.hpp"
+
 #define DB_STRUCTURE_FILE "/db.stdb"
 
 //WARMING: CHANGING THIS VALUES MAY DESTROY DATABASE
 #define MAX_TABLE_NAME 512
 #define MAX_TABLES_COUNT 32
-
-#include <cstdint>
-#include <string>
-
-#include "../headers/table.hpp"
 
 using namespace std;
 

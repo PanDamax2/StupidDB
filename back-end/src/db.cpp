@@ -15,7 +15,7 @@ DBheader::DBheader() {
     signature[1] = 'T';
     signature[2] = 'D';
     signature[3] = 'B';
-    tablesCount = 0;;
+    tablesCount = 0;
 }
 
 void DBStructure::writeStructure() { 
@@ -82,7 +82,6 @@ void DB::init() {
     for(int i = 0; i < MAX_TABLES_COUNT; i++) {
         if(dbTables[i].isOccupied) {
             string table_file = db_location + "/" + dbTables[i].name + ".sttb";
-            cout << dbTables[i].name << endl;
             tables[i] = new Table(table_file);
             tables[i]->init();
         }
@@ -146,42 +145,3 @@ int DB::searchTableByName(string name) {
     }
     return -1;
 }
-
-// int DBStructure::createCol(DBcol col) {
-//     if(header.totalColsCount >= MAX_COLS_COUNT)
-//         throw runtime_error("DB: Maximum columns count reached");
-
-//     if(strlen(col.name) == 0)
-//         throw runtime_error("DB: Column name cannot be empty");
-    
-//     if(strlen(col.name) >= MAX_COL_NAME)
-//         throw runtime_error("DB: Column name is too long");
-    
-//     for(int i = 0; i < MAX_COLS_COUNT; i++) {
-//         if(cols[i].isOccupied && strcmp(cols[i].name, col.name) == 0 && cols[i].tableID == col.tableID) {
-//             throw runtime_error("DB: Column with this name in table already exists");
-//         }
-//     }
-
-//     for(int i = 0; i < MAX_COLS_COUNT; i++) {
-//         if(cols[i].isOccupied == 0) {
-//             cols[i] = col;
-//             cols[i].isOccupied = 1;
-//             header.totalColsCount++;
-//             return i;
-//         }
-//     }
-//     throw runtime_error("DB: No space for new column");
-// }
-
-// void DBStructure::deleteCol(int colID) {
-//     if(colID < 0 || colID >= MAX_COLS_COUNT)
-//         throw runtime_error("DB: Invalid column ID");
-
-//     if(cols[colID].isOccupied == 0)
-//         throw runtime_error("DB: Column does not exist");
-
-//     cols[colID] = {};
-//     header.totalColsCount--;
-// }
-
