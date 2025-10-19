@@ -28,11 +28,8 @@ typedef float datatype_float;
 typedef string datatype_varchar;
 typedef bool datatype_bool;
 
-#define DATA_TYPE_INT_SIZE sizeof(datatype_int)
-#define DATA_TYPE_FLOAT_SIZE sizeof(datatype_float)
-#define DATA_TYPE_BOOL_SIZE sizeof(datatype_bool)
-
 using dataVector = vector<variant<datatype_int, datatype_float, datatype_varchar, datatype_bool>>;
+using dataMatrix = vector<dataVector>;
 
 class TableCol {
 public:
@@ -46,7 +43,7 @@ class TableDataHeader {
 public:
     uint8_t isOccupied;
     uint32_t rowID;
-    uint64_t colID;
+    uint32_t colID;
     uint64_t start;
     uint32_t size;
 };
@@ -64,13 +61,13 @@ public:
 
 class Table {
     TableHeader header;
-    TableCol cols[MAX_COLS_COUNT];
     TableDataHeader *dataHeaders;
-    int32_t *rows;
     uint8_t *data;
     size_t dataSize;
 public:
+    TableCol cols[MAX_COLS_COUNT];
     string table_file;
+    int32_t *rows;
     Table(string table_file);
     ~Table();
     void init();
@@ -84,6 +81,10 @@ public:
     void readData();
     void writeData();
     void insert(dataVector rowData);
+    void insertMultipleRows(dataMatrix rowsData);
+    dataVector select(vector<uint32_t> colIDs, uint32_t rowID);
+    dataMatrix selectMultipleRows(vector<uint32_t> colIDs, vector<uint32_t> rowIDs);
+    dataMatrix selectAll();
 };
 
 #endif

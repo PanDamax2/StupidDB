@@ -163,6 +163,8 @@ void Table::readData() {
 }
 
 void Table::writeData() {
+    writeStructure();
+
     ofstream out(table_file, ios::binary | ios::in | ios::out);
 
     if(!out)
@@ -183,9 +185,9 @@ void Table::insert(dataVector rowData) {
 
     for(int i = 0; i < MAX_ROWS_COUNT; i++) {
         if(rows[i] == -1) {
-            rows[i] = header.currentRowID;
             header.rowsCount++;
             header.currentRowID++;
+            rows[i] = header.currentRowID;
             break;
         }
     }
@@ -201,8 +203,10 @@ void Table::insert(dataVector rowData) {
             }
         }
 
+        if(dataHeaderPtr == nullptr)
+            throw runtime_error("Cannot find data header");
+        
         header.tableHeadersCount++;
-        header.currentRowID++;
         dataHeaderPtr->isOccupied = 1;
         dataHeaderPtr->rowID = header.currentRowID;
         dataHeaderPtr->colID = i;
@@ -258,4 +262,97 @@ void Table::insert(dataVector rowData) {
         if(dataHeaderPtr == nullptr)
             throw runtime_error("Table: No space for new data header");
     }
+}
+
+void Table::insertMultipleRows(dataMatrix rowsData) {
+    for(const auto& row: rowsData) {
+        insert(row);
+    }
+}
+
+dataVector Table::select(vector<uint32_t> colIDs, uint32_t rowID) {
+    dataVector selectedData;
+
+    if(colIDs.size() > header.colsCount)
+        throw runtime_error("Table: inserted column count is bigger than column count in database");
+
+    for(const uint32_t &colID: colIDs) {
+        if(colID >= header.colsCount)
+            throw runtime_error("Table: Inwalid column ID");
+        
+
+        if(cols[colID].isOccupied != 1)
+            throw runtime_error("Cannot find a column of ID " + rowID);
+        
+        TableDataHeader* dataHeaderPtr = nullptr;
+        for(int i = 0; i < MAX_DATA_HEADERS_COUNT; i++) {
+            if(dataHeaders[i].isOccupied == 1 && dataHeaders[i].colID == colID && dataHeaders[i].rowID == rowID) {
+                dataHeaderPtr = &dataHeaders[i];
+                break;
+            }
+        }
+
+        if(dataHeaderPtr == nullptr)
+            throw runtime_error("Table: Cannot find selected data");
+
+        //cout << "Data header start: " << dataHeaderPtr->start << "\nData header size: " << dataHeaderPtr->size << endl;
+        
+        switch(cols[colID].datatype) {
+            case DATA_TYPE_INT:
+                datatype_int intSelectedDataPart;
+                memcpy(&intSelectedDataPart, data + dataHeaderPtr->start, sizeof(datatype_int));
+                selectedData.push_back(intSelectedDataPart);
+                break;
+
+            case DATA_TYPE_FLOAT:
+                datatype_float floatSelectedDataPart;
+                memcpy(&floatSelectedDataPart, data + dataHeaderPtr->start, sizeof(datatype_float));
+                selectedData.push_back(floatSelectedDataPart);
+                break; 
+                
+            case DATA_TYPE_VARCHAR:
+                char* charSelectedDataPart;
+                charSelectedDataPart = (char*)malloc(dataHeaderPtr->size);
+                memcpy(charSelectedDataPart, data + dataHeaderPtr->start, dataHeaderPtr->size);
+                selectedData.push_back(string(charSelectedDataPart));
+                free(charSelectedDataPart);
+                break;
+
+            case DATA_TYPE_BOOL:
+                datatype_bool boolSelectedDataPart;
+                memcpy(&boolSelectedDataPart, data + dataHeaderPtr->start, sizeof(datatype_bool));
+                selectedData.push_back(boolSelectedDataPart);
+                break; 
+        }
+    }
+
+    return selectedData;
+}
+
+dataMatrix Table::selectMultipleRows(vector<uint32_t> colIDs, vector<uint32_t> rowIDs) {
+    dataMatrix selectedData;
+    for(const uint32_t &rowID : rowIDs) {
+        selectedData.push_back(select(colIDs, rowID));
+    }
+
+    return selectedData;
+}
+
+dataMatrix Table::selectAll() {
+    vector<uint32_t> colIDs;
+    for(uint32_t i = 0; i < MAX_COLS_COUNT; i++) {
+        if(cols[i].isOccupied == 1) {
+            colIDs.push_back(i);
+        }
+    }
+
+    vector<uint32_t> rowIDs;
+    for(int i = 0; i < MAX_ROWS_COUNT; i++) {
+        if(rows[i] != -1) {
+            rowIDs.push_back(rows[i]);
+        }
+    }
+
+
+    return selectMultipleRows(colIDs, rowIDs);
 }
