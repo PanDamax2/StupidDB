@@ -42,7 +42,7 @@ int main() {
     db->init();   
 
     db->createTable("OwO");
-    db->createTable("UwU");
+    db->createTable("people");
 
     int toDelete = db->searchTableByName("OwO");
 
@@ -50,42 +50,30 @@ int main() {
     
     db->writeStructure();
 
-    Table *uwu = db->tables[db->searchTableByName("UwU")];
-    uwu->init();
-    uwu->createCol({1, "id", 0, DATA_TYPE_INT});
-    uwu->createCol({1, "name", 512, DATA_TYPE_VARCHAR});
-    uwu->createCol({1, "age", 0, DATA_TYPE_INT});
-    uwu->createCol({1, "isStudent",  0, DATA_TYPE_BOOL});
+    Table *people = db->tables[db->searchTableByName("people")];
+    people->init();
+    people->createCol({1, "id", 0, DATA_TYPE_INT});
+    people->createCol({1, "name", 512, DATA_TYPE_VARCHAR});
+    people->createCol({1, "age", 0, DATA_TYPE_INT});
+    people->createCol({1, "isStudent",  0, DATA_TYPE_BOOL});
 
-    // uwu->deleteCol(uwu->searchColByName("name"));
-
-    // int row1 = uwu->createRow();
-    // int row2 = uwu->createRow();
-    // int row3 = uwu->createRow();
-
-    // uwu->deleteRow(row2);
-
-    uwu->writeStructure();
-
-    // uwu->readData();
-    // cout << reinterpret_cast<const char*>(uwu->data) << endl;
-    // cout << "Data size: " << uwu->dataSize << " bytes" << endl;
+    people->writeStructure();
 
 
-    uwu->readData();
+    people->readData();
 
-    uwu->insertMultipleRows({{1, "Klara", 21, true}, {2, "Maurycy", 45, false}, {3, "Angel", 25, false}});
+    people->insertMultipleRows({{1, "Klara", 21, true}, {2, "Maurycy", 45, false}, {3, "Angel", 25, false}});
     
-    uwu->writeData();
-    uwu->readData();
+    people->writeData();
+    people->readData();
 
-    dataVector data = uwu->select({0, 1, 2, 3}, 2);
+    dataVector data = people->select({0, 1, 2, 3}, 2);
     printDataVector(data);
 
-    dataMatrix data2 = uwu->selectMultipleRows({0, 1, 2, 3}, {1, 2, 3});
+    dataMatrix data2 = people->selectMultipleRows({0, 1, 2, 3}, {1, 2, 3});
     printDataMartix(data2);
 
-    dataMatrix data3 = uwu->selectAll();
+    dataMatrix data3 = people->selectAll();
     printDataMartix(data3);
 
     cout << "All operations completed successfully!" << endl;
