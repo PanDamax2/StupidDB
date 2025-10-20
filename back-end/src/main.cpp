@@ -72,16 +72,9 @@ int main() {
     // cout << "Data size: " << uwu->dataSize << " bytes" << endl;
 
 
-    // const char *text = "siusiak!";
-    // size_t textSize = strlen(text) + 1;
-    // uwu->dataSize = textSize;
-    // uwu->data = (uint8_t*)malloc(textSize);
-    // memcpy(uwu->data, text, textSize); 
-    // uwu->writeData();
-
     uwu->readData();
 
-    uwu->insertMultipleRows({{1, "Klara", 21, true}, {2, "Maurycy", 45, false}, {3, "Debil", 25, false}});
+    uwu->insertMultipleRows({{1, "Klara", 21, true}, {2, "Maurycy", 45, false}, {3, "Angel", 25, false}});
     
     uwu->writeData();
     uwu->readData();
