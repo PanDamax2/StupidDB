@@ -13,16 +13,16 @@ namespace fs = std::filesystem;
 void printDataVector(dataVector vec) {
     for(const auto &val : vec) {
         if(holds_alternative<datatype_int>(val))
-            cout << get<datatype_int>(val) << " ";
+            cout << get<datatype_int>(val) << "\t";
         else if(holds_alternative<datatype_float>(val))
-            cout << get<datatype_float>(val) << " ";
+            cout << get<datatype_float>(val) << "\t";
         else if(holds_alternative<datatype_varchar>(val))
-            cout << get<datatype_varchar>(val) << " ";
+            cout << get<datatype_varchar>(val) << "\t";
         else if(holds_alternative<datatype_bool>(val)) {
             if(get<datatype_bool>(val))
-                cout << "true ";
+                cout << "true\t";
             else
-                cout << "false ";
+                cout << "false\t";
         }
     }
     cout << endl;
@@ -45,8 +45,8 @@ int main() {
     db->createTable("people");
 
     int toDelete = db->searchTableByName("OwO");
+    // db->deleteTable(toDelete);
 
-    db->deleteTable(toDelete);
     
     db->writeStructure();
 
@@ -67,14 +67,20 @@ int main() {
     people->writeData();
     people->readData();
 
-    dataVector data = people->select({0, 1, 2, 3}, 2);
-    printDataVector(data);
+    // dataVector data = people->select({0, 1, 2, 3}, 2);
+    // printDataVector(data);
 
-    dataMatrix data2 = people->selectMultipleRows({0, 1, 2, 3}, {1, 2, 3});
-    printDataMartix(data2);
+    // dataMatrix data2 = people->selectMultipleRows({0, 1, 2, 3}, {1, 2, 3});
+    // printDataMartix(data2);
 
-    dataMatrix data3 = people->selectAll();
-    printDataMartix(data3);
+    dataVector cols = people->showCols();
+    dataMatrix data = people->selectAll();
+    printDataVector(cols);
+    printDataMartix(data);
+
+    cout << "TABLES:" << endl;
+    dataMatrix tables = db->showTables();
+    printDataMartix(tables);
 
     cout << "All operations completed successfully!" << endl;
 

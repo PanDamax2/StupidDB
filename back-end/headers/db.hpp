@@ -49,6 +49,7 @@ public:
     int createTable(string name);
     void deleteTable(int tableID);
     int searchTableByName(string name);
+    dataMatrix showTables();
 };
 
 #endif

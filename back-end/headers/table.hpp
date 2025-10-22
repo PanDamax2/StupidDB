@@ -80,6 +80,7 @@ public:
     void deleteRow(int rowID);
     void readData();
     void writeData();
+    dataVector showCols();
     void insert(dataVector rowData);
     void insertMultipleRows(dataMatrix rowsData);
     dataVector select(vector<uint32_t> colIDs, uint32_t rowID);

@@ -145,3 +145,13 @@ int DB::searchTableByName(string name) {
     }
     return -1;
 }
+
+dataMatrix DB::showTables() {
+    dataMatrix selectedTables;
+    for(int i = 0; i < MAX_TABLES_COUNT; i++) {
+        if(dbTables[i].isOccupied)
+            selectedTables.push_back({i, string(dbTables[i].name)});
+    }
+
+    return selectedTables;
+}

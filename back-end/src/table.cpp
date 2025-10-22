@@ -134,6 +134,15 @@ int Table::searchColByName(string name) {
     return -1;
 }
 
+dataVector Table::showCols() {
+    dataVector selectedCols;
+    for(int i = 0; i < MAX_COLS_COUNT; i++) {
+        if(cols[i].isOccupied)
+            selectedCols.push_back(string(cols[i].name));
+    }
+    return selectedCols;
+}
+
 void Table::deleteRow(int rowID) {
     if(rowID < 0 || rowID >= MAX_ROWS_COUNT)
         throw runtime_error("Table: Invalid row ID");
