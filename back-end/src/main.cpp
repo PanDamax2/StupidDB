@@ -6,6 +6,7 @@
 
 #include "../headers/db.hpp"
 #include "../headers/table.hpp"
+#include "../headers/test.hpp"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -45,7 +46,7 @@ int main() {
     db->createTable("people");
 
     int toDelete = db->searchTableByName("OwO");
-    // db->deleteTable(toDelete);
+    db->deleteTable(toDelete);
 
     
     db->writeStructure();
@@ -84,6 +85,7 @@ int main() {
 
     cout << "All operations completed successfully!" << endl;
 
+    test();
     delete db;
 }
 
