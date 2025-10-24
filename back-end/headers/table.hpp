@@ -77,7 +77,6 @@ public:
     void deleteCol(int colID);
     int searchColByName(string name);
     int createRow();
-    void deleteRow(int rowID);
     void readData();
     void writeData();
     dataVector showCols();
@@ -86,6 +85,7 @@ public:
     dataVector select(vector<uint32_t> colIDs, uint32_t rowID);
     dataMatrix selectMultipleRows(vector<uint32_t> colIDs, vector<uint32_t> rowIDs);
     dataMatrix selectAll();
+    void deleteRow(int rowID);
 };
 
 #endif

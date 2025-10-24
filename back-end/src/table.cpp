@@ -143,17 +143,6 @@ dataVector Table::showCols() {
     return selectedCols;
 }
 
-void Table::deleteRow(int rowID) {
-    if(rowID < 0 || rowID >= MAX_ROWS_COUNT)
-        throw runtime_error("Table: Invalid row ID");
-
-    if(rows[rowID] == -1)
-        throw runtime_error("Table: Row does not exist");
-
-    rows[rowID] = -1; // Mark row as free
-    header.rowsCount--;
-}
-
 void Table::readData() {
     ifstream in(table_file, ios::binary);
 
@@ -364,4 +353,15 @@ dataMatrix Table::selectAll() {
 
 
     return selectMultipleRows(colIDs, rowIDs);
+}
+
+void Table::deleteRow(int rowID) {
+    if(rowID < 0 || rowID >= MAX_ROWS_COUNT)
+        throw runtime_error("Table: Invalid row ID");
+
+    if(rows[rowID] == -1)
+        throw runtime_error("Table: Row does not exist");
+
+    rows[rowID] = -1; // Mark row as free
+    header.rowsCount--;
 }
