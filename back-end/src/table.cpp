@@ -361,7 +361,7 @@ void Table::cleanData() {
             dataHeadersVector.push_back(dataHeaders[i]);
     }
 
-    if(dataHeadersVector.size() > 2) {
+    if(dataHeadersVector.size() > 1) {
         sort(dataHeadersVector.begin(), dataHeadersVector.end(),
             [](const TableDataHeader &a, const TableDataHeader &b) {
                 return a.start < b.start;
