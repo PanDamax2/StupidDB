@@ -28,7 +28,8 @@ typedef float datatype_float;
 typedef string datatype_varchar;
 typedef bool datatype_bool;
 
-using dataVector = vector<variant<datatype_int, datatype_float, datatype_varchar, datatype_bool>>;
+using dataVariable = variant<datatype_int, datatype_float, datatype_varchar, datatype_bool>;
+using dataVector = vector<dataVariable>;
 using dataMatrix = vector<dataVector>;
 
 class TableCol {
@@ -74,19 +75,20 @@ public:
     void init();
     void writeStructure();
     void readStructure();
-    int createCol(TableCol col);
-    void deleteCol(int colID);
+    void createCols(vector<TableCol> col);
     int searchColByName(string name);
-    int createRow();
     void readData();
     void writeData();
     dataVector showCols();
-    void insert(dataVector rowData);
-    void insertMultipleRows(dataMatrix rowsData);
+    uint32_t insert(dataVector rowData);
+    vector<uint32_t> insertMultipleRows(dataMatrix rowsData);
     dataVector select(vector<uint32_t> colIDs, uint32_t rowID);
     dataMatrix selectMultipleRows(vector<uint32_t> colIDs, vector<uint32_t> rowIDs);
     dataMatrix selectAll();
     void deleteRow(uint32_t rowID);
+    void deleteMultipleRows(vector<uint32_t> rowIDs);
+    void truncate();
+    void update(uint32_t colID, uint32_t rowID, dataVariable dataToUpdate);
 };
 
 #endif

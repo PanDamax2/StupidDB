@@ -88,42 +88,40 @@ void Table::init() {
     }
 }
 
-int Table::createCol(TableCol col) {
-    if(header.colsCount >= MAX_COLS_COUNT)
+void Table::createCols(vector<TableCol> colsToInsert) {
+    for(int i = 0; i < MAX_COLS_COUNT; i++)
+        cols[i] = {};
+
+    for(const TableCol& col: colsToInsert) {
+        if(header.colsCount >= MAX_COLS_COUNT)
         throw runtime_error("Table: Maximum columns count reached");
 
-    if(strlen(col.name) == 0)
-        throw runtime_error("Table: Column name cannot be empty");
-    
-    if(strlen(col.name) >= MAX_COL_NAME)
-        throw runtime_error("Table: Column name is too long");
+        if(strlen(col.name) == 0)
+            throw runtime_error("Table: Column name cannot be empty");
+        
+        if(strlen(col.name) >= MAX_COL_NAME)
+            throw runtime_error("Table: Column name is too long");
 
-    for(int i = 0; i < MAX_COLS_COUNT; i++) {
-        if(cols[i].isOccupied && strcmp(cols[i].name, col.name) == 0) {
-            throw runtime_error("Table: Column with this name already exists");
+        for(int i = 0; i < MAX_COLS_COUNT; i++) {
+            if(cols[i].isOccupied && strcmp(cols[i].name, col.name) == 0) {
+                throw runtime_error("Table: Column with this name already exists");
+            }
         }
-    }
 
-    for(int i = 0; i < MAX_COLS_COUNT; i++) {
-        if(cols[i].isOccupied == 0) {
-            cols[i] = col;
-            cols[i].isOccupied = 1;
-            header.colsCount++;
-            return i;
+        bool isSpace = false;
+        for(int i = 0; i < MAX_COLS_COUNT; i++) {
+            if(cols[i].isOccupied == 0) {
+                cols[i] = col;
+                cols[i].isOccupied = 1;
+                header.colsCount++;
+                isSpace = true;
+                break;
+            }
         }
+
+        if(!isSpace)
+            throw runtime_error("Table: No space for column " + string(col.name));
     }
-    throw runtime_error("Table: No space for new column");
-}
-
-void Table::deleteCol(int colID) {
-    if(colID < 0 || colID >= MAX_COLS_COUNT)
-        throw runtime_error("Table: Invalid column ID");
-
-    if(cols[colID].isOccupied == 0)
-        throw runtime_error("Table: Column does not exist");
-
-    cols[colID] = {};
-    header.colsCount--;
 }
 
 int Table::searchColByName(string name) {
@@ -175,7 +173,7 @@ void Table::writeData() {
     out.close();
 }
 
-void Table::insert(dataVector rowData) {
+uint32_t Table::insert(dataVector rowData) {
     if(rowData.size() != header.colsCount)
         throw runtime_error("Table: Row data does not match columns count");
     
@@ -261,12 +259,17 @@ void Table::insert(dataVector rowData) {
         if(dataHeaderPtr == nullptr)
             throw runtime_error("Table: No space for new data header");
     }
+
+    return header.currentRowID;
 }
 
-void Table::insertMultipleRows(dataMatrix rowsData) {
+vector<uint32_t> Table::insertMultipleRows(dataMatrix rowsData) {
+    vector<uint32_t> rowIDs;
     for(const auto& row: rowsData) {
-        insert(row);
+        rowIDs.push_back(insert(row));
     }
+
+    return rowIDs;
 }
 
 dataVector Table::select(vector<uint32_t> colIDs, uint32_t rowID) {
@@ -369,7 +372,7 @@ void Table::cleanData() {
     }
    
     
-    for(size_t i = 0; i < dataHeadersVector.size() - 1; i++) {
+    for(size_t i; i + 1 < dataHeadersVector.size(); i++) {
         TableDataHeader cur = dataHeadersVector[i];
         TableDataHeader next = dataHeadersVector[i + 1];
 
@@ -416,4 +419,66 @@ void Table::deleteRow(uint32_t rowID) {
         }
     }
     cleanData();
+}
+
+void Table::deleteMultipleRows(vector<uint32_t> rowIDs) {
+    for(const uint32_t &row : rowIDs) {
+        deleteRow(row);
+    }
+}
+
+void Table::truncate() {
+    vector<uint32_t> rowsIDs;
+    for(int i = 0; i < MAX_ROWS_COUNT; i++) {
+        if(rows[i] != -1)
+            rowsIDs.push_back(rows[i]);
+    }
+
+    deleteMultipleRows(rowsIDs);
+}
+
+void Table::update(uint32_t colID, uint32_t rowID, dataVariable dataToUpdate) {
+    TableDataHeader *dataHeaderPtr = nullptr;
+    for(int i = 0; i < MAX_DATA_HEADERS_COUNT; i++) {
+        if(dataHeaders[i].isOccupied && dataHeaders[i].colID == colID && dataHeaders[i].rowID == rowID) {
+            dataHeaderPtr = &dataHeaders[i];
+            break;
+        }
+    }
+
+    if(dataHeaderPtr == nullptr)
+        throw runtime_error("Invalid column or row");
+
+    if(holds_alternative<datatype_int>(dataToUpdate)) {
+        if(cols[colID].datatype != DATA_TYPE_INT)
+            throw runtime_error("Invalid data type");
+
+        datatype_int val = get<datatype_int>(dataToUpdate);
+        memcpy(data + dataHeaderPtr->start, &val, sizeof(datatype_int));
+    } else if(holds_alternative<datatype_float>(dataToUpdate)) {
+         if(cols[colID].datatype != DATA_TYPE_FLOAT)
+            throw runtime_error("Invalid data type");
+
+        datatype_float val = get<datatype_float>(dataToUpdate);
+        memcpy(data + dataHeaderPtr->start, &val, sizeof(datatype_float));
+    } else if(holds_alternative<datatype_varchar>(dataToUpdate)) {
+         if(cols[colID].datatype != DATA_TYPE_VARCHAR)
+            throw runtime_error("Invalid data type");
+        
+        datatype_varchar val = get<datatype_varchar>(dataToUpdate);
+        size_t strSize = val.size() + 1;
+
+        if(dataHeaderPtr->size < strSize)
+            throw runtime_error("String is too big");
+
+        
+        memcpy(data + dataHeaderPtr->start, val.c_str(), strSize);
+    } else if(holds_alternative<datatype_bool>(dataToUpdate)) {
+         if(cols[colID].datatype != DATA_TYPE_FLOAT)
+            throw runtime_error("Invalid data type");
+
+        datatype_bool val = get<datatype_bool>(dataToUpdate);
+        memcpy(data + dataHeaderPtr->start, &val, sizeof(datatype_bool));
+    } else
+        throw runtime_error("Invalid data type");
 }

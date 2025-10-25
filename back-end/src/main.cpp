@@ -34,6 +34,8 @@ void printDataMartix(dataMatrix mat) {
     }
 }
 
+
+
 int main() {
     if(fs::exists("db"))
         fs::remove_all("db");
@@ -52,20 +54,20 @@ int main() {
 
     Table *people = db->tables[db->searchTableByName("people")];
     people->init();
-    people->createCol({1, "id", 0, DATA_TYPE_INT});
-    people->createCol({1, "name", 512, DATA_TYPE_VARCHAR});
-    people->createCol({1, "age", 0, DATA_TYPE_INT});
-    people->createCol({1, "isStudent",  0, DATA_TYPE_BOOL});
+    people->createCols({{1, "id", 0, DATA_TYPE_INT}, {1, "name", 512, DATA_TYPE_VARCHAR}, {1, "age", 0, DATA_TYPE_INT}, {1, "isStudent",  0, DATA_TYPE_BOOL}});
 
     people->writeStructure();
 
-
     people->readData();
 
-    people->insertMultipleRows({{1, "Klara", 21, true}, {2, "Maurycy", 45, false}, {3, "Angel", 25, false}, {4, "Aurelia", 20, true}});
-    
-    people->deleteRow(2);
-    people->deleteRow(4);
+    vector<uint32_t> rowsIDs = people->insertMultipleRows({{1, "Klara", 21, true}, {2, "Maurycy", 45, false}});
+    vector<uint32_t> rowsIDs2 = people->insertMultipleRows({{3, "Angel", 25, false}, {4, "Aurelia", 20, true}});
+
+    // people->deleteMultipleRows({1, 4});
+    // people->deleteMultipleRows({0, 1, 2});
+    // people->truncate();
+
+    people->update(2, 3, 6407);
 
     people->writeData();
     people->readData();
