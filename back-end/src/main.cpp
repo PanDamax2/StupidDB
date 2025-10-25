@@ -62,8 +62,11 @@ int main() {
 
     people->readData();
 
-    people->insertMultipleRows({{1, "Klara", 21, true}, {2, "Maurycy", 45, false}, {3, "Angel", 25, false}});
+    people->insertMultipleRows({{1, "Klara", 21, true}, {2, "Maurycy", 45, false}, {3, "Angel", 25, false}, {4, "Aurelia", 20, true}});
     
+    people->deleteRow(2);
+    people->deleteRow(4);
+
     people->writeData();
     people->readData();
 

@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <variant>
 #include <vector>
+#include <algorithm>
 
 #include "../headers/table.hpp"
 
@@ -18,7 +19,7 @@ TableHeader::TableHeader() {
     signature[2] = 'T';
     signature[3] = 'B';
     colsCount = 0;
-    tableHeadersCount = 0;
+    dataHeadersCount = 0;
     rowsCount = 0;
     currentRowID = 0;
 }
@@ -204,7 +205,7 @@ void Table::insert(dataVector rowData) {
         if(dataHeaderPtr == nullptr)
             throw runtime_error("Cannot find data header");
         
-        header.tableHeadersCount++;
+        header.dataHeadersCount++;
         dataHeaderPtr->isOccupied = 1;
         dataHeaderPtr->rowID = header.currentRowID;
         dataHeaderPtr->colID = i;
@@ -240,10 +241,10 @@ void Table::insert(dataVector rowData) {
             if(colPtr->size < strSize)
                 throw runtime_error("Table: String size exceeds column size for column " + string(colPtr->name));
 
-            data = (uint8_t*)realloc(data, dataSize + strSize);
+            data = (uint8_t*)realloc(data, dataSize + colPtr->size);
             memcpy(data + dataSize, val.c_str(), strSize);
-            dataSize += strSize;
-            dataHeaderPtr->size = static_cast<uint32_t>(strSize);
+            dataSize += colPtr->size;
+            dataHeaderPtr->size = static_cast<uint32_t>(colPtr->size);
         } else if(holds_alternative<datatype_bool>(value)) {
             if(colPtr->datatype != DATA_TYPE_BOOL)
                 throw runtime_error("Table: Data type mismatch for column " + string(colPtr->name));
@@ -293,7 +294,6 @@ dataVector Table::select(vector<uint32_t> colIDs, uint32_t rowID) {
         if(dataHeaderPtr == nullptr)
             throw runtime_error("Table: Cannot find selected data");
 
-        //cout << "Data header start: " << dataHeaderPtr->start << "\nData header size: " << dataHeaderPtr->size << endl;
         
         switch(cols[colID].datatype) {
             case DATA_TYPE_INT:
@@ -351,17 +351,66 @@ dataMatrix Table::selectAll() {
         }
     }
 
-
     return selectMultipleRows(colIDs, rowIDs);
 }
 
-void Table::deleteRow(int rowID) {
-    if(rowID < 0 || rowID >= MAX_ROWS_COUNT)
-        throw runtime_error("Table: Invalid row ID");
+void Table::cleanData() {
+    vector<TableDataHeader> dataHeadersVector;
+    for(int i = 0; i < MAX_DATA_HEADERS_COUNT; i++) {
+        if(dataHeaders[i].isOccupied)
+            dataHeadersVector.push_back(dataHeaders[i]);
+    }
 
-    if(rows[rowID] == -1)
-        throw runtime_error("Table: Row does not exist");
+    sort(dataHeadersVector.begin(), dataHeadersVector.end(),
+        [](const TableDataHeader &a, const TableDataHeader &b) {
+            return a.start < b.start;
+        });
+    
+    for(size_t i = 0; i < dataHeadersVector.size() - 1; i++) {
+        TableDataHeader cur = dataHeadersVector[i];
+        TableDataHeader next = dataHeadersVector[i + 1];
 
-    rows[rowID] = -1; // Mark row as free
+        uint64_t gapStart = cur.start + cur.size;                     
+        if (gapStart < next.start) {                                       
+            uint64_t gap  = next.start - gapStart;           
+            uint64_t tailSrc = gapStart + gap;                        
+            uint64_t tailLen = dataSize - tailSrc;                     
+
+            std::memmove(data + gapStart, data + tailSrc, tailLen);   
+            dataSize -= gap;                                                 
+
+            for(size_t j = i + 1; j < dataHeadersVector.size(); j++)
+                dataHeadersVector[j].start -= gap;
+
+            data = (uint8_t*)std::realloc(data, dataSize);
+        }
+    }
+
+    for(int i = 0; i < MAX_DATA_HEADERS_COUNT; i++)
+        dataHeaders[i] = {};
+
+    copy(dataHeadersVector.begin(), dataHeadersVector.end(), dataHeaders);
+}
+
+void Table::deleteRow(uint32_t rowID) {
+    bool rowsFound = false;
+    for(int i = 0; i < MAX_ROWS_COUNT; i++) {
+        if(rows[i] == (int)rowID) {
+            rows[i] = -1;
+            rowsFound = true;
+        }
+    }
+
+    if(!rowsFound)
+        throw runtime_error("Cannot find row to delete");
+
     header.rowsCount--;
+
+    for(int i = 0; i < MAX_DATA_HEADERS_COUNT; i++) {
+        if(dataHeaders[i].isOccupied && dataHeaders[i].rowID == rowID) {
+            dataHeaders[i].isOccupied = 0;
+            header.dataHeadersCount--;
+        }
+    }
+    cleanData();
 }

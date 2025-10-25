@@ -52,7 +52,7 @@ class TableHeader {
 public:
     uint8_t signature[4];
     uint32_t colsCount;
-    uint32_t tableHeadersCount;
+    uint32_t dataHeadersCount;
     uint32_t rowsCount;
     uint32_t currentRowID;
 
@@ -64,6 +64,7 @@ class Table {
     TableDataHeader *dataHeaders;
     uint8_t *data;
     size_t dataSize;
+    void cleanData();
 public:
     TableCol cols[MAX_COLS_COUNT];
     string table_file;
@@ -85,7 +86,7 @@ public:
     dataVector select(vector<uint32_t> colIDs, uint32_t rowID);
     dataMatrix selectMultipleRows(vector<uint32_t> colIDs, vector<uint32_t> rowIDs);
     dataMatrix selectAll();
-    void deleteRow(int rowID);
+    void deleteRow(uint32_t rowID);
 };
 
 #endif
