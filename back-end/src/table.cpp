@@ -361,10 +361,13 @@ void Table::cleanData() {
             dataHeadersVector.push_back(dataHeaders[i]);
     }
 
-    sort(dataHeadersVector.begin(), dataHeadersVector.end(),
-        [](const TableDataHeader &a, const TableDataHeader &b) {
-            return a.start < b.start;
-        });
+    if(dataHeadersVector.size() > 2) {
+        sort(dataHeadersVector.begin(), dataHeadersVector.end(),
+            [](const TableDataHeader &a, const TableDataHeader &b) {
+                return a.start < b.start;
+            });
+    }
+   
     
     for(size_t i = 0; i < dataHeadersVector.size() - 1; i++) {
         TableDataHeader cur = dataHeadersVector[i];
@@ -376,13 +379,13 @@ void Table::cleanData() {
             uint64_t tailSrc = gapStart + gap;                        
             uint64_t tailLen = dataSize - tailSrc;                     
 
-            std::memmove(data + gapStart, data + tailSrc, tailLen);   
+            memmove(data + gapStart, data + tailSrc, tailLen);   
             dataSize -= gap;                                                 
 
             for(size_t j = i + 1; j < dataHeadersVector.size(); j++)
                 dataHeadersVector[j].start -= gap;
 
-            data = (uint8_t*)std::realloc(data, dataSize);
+            data = (uint8_t*)realloc(data, dataSize);
         }
     }
 
