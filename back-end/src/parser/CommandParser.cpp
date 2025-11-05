@@ -92,6 +92,12 @@ ParsedCommand CommandParser::parse(const std::string& input) {
         return cmd;
     }
 
+    if (upper == "LOGOUT") {
+        ParsedCommand cmd;
+        cmd.type = CommandType::LOGOUT;
+        return cmd;
+    }
+
     Logger::warn("Parser: Nierozpoznana komenda: " + trimmedInput);
     return ParsedCommand();
 }

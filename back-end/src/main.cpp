@@ -57,7 +57,7 @@ int main() {
 
     std::string input;
     while (true) {
-        std::cout << (executor.getCurrentDatabase().empty() ? "stupiddb" : executor.getCurrentDatabase()) << "> ";
+        std::cout << (executor.getCurrentDatabase().empty() ? "StupidDB" : executor.getCurrentDatabase()) << "> ";
         std::cout.flush();
 
         if (!std::getline(std::cin, input)) {
@@ -71,7 +71,7 @@ int main() {
         try {
             cmd = parser.parse(input);
         } catch (const std::exception& e) {
-            std::cout << "Bład: " << e.what() << "\n\n";
+            std::cout << "Blad: " << e.what() << "\n\n";
             continue;
         }
 
@@ -82,7 +82,7 @@ int main() {
 
         bool success = executor.execute(cmd);
         if (!success && cmd.type != CommandType::HELP && cmd.type != CommandType::UNKNOWN) {
-            std::cout << "Operacja nie powiodla się.\n\n";
+            std::cout << "Operacja nie powiodla sie.\n\n";
         }
     }
    

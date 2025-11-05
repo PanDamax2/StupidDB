@@ -70,6 +70,9 @@ bool QueryExecutor::execute(const ParsedCommand& cmd) {
             return true;
         case CommandType::EXIT:
             return true;
+        
+        case CommandType::LOGOUT:
+            return executeLogout();
 
         case CommandType::UNKNOWN:
             std::cout << "Nieznana komenda. Wpisz HELP.\n";
@@ -82,6 +85,18 @@ bool QueryExecutor::execute(const ParsedCommand& cmd) {
 }
 
 // === DATABASE MANAGEMENT ===
+bool QueryExecutor::executeLogout() {
+    if (currentDatabase.empty()) {
+        std::cout << "Juz nie jestes w zadnej bazie.\n\n";
+    } else {
+        saveAllTables();
+        clearCache();
+        currentDatabase = "";
+        std::cout << "Wylogowano z bazy.\n\n";
+    }
+    return true;
+}
+
 bool QueryExecutor::executeShowDatabases() {
     try {
         auto dirs = FileManager::listDirectories(databasePath);
@@ -487,6 +502,7 @@ void QueryExecutor::showHelp() {
   CLEARTABLE tabela            - wyczysc tabele
 
   HELP                         - ta pomoc
+  LOGOUT                       - wyloguj
   EXIT                         - wyjscie
 )";
     std::cout << std::endl;

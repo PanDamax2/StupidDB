@@ -41,6 +41,7 @@ private:
     bool executeUseDatabase(const ParsedCommand& cmd);
     bool executeDropDatabase(const ParsedCommand& cmd);
     bool executeChangeDatabaseName(const ParsedCommand& cmd);
+    bool executeLogout();
 
     // === DDL (Data Definition Language) ===
     bool executeShowTables();

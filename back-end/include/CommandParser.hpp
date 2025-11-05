@@ -33,6 +33,7 @@ enum class CommandType {
     
     // === Utility ===
     HELP,
+    LOGOUT,
     EXIT
 };
 

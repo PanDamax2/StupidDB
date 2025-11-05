@@ -119,5 +119,6 @@ Komenda	Opis
 HELP	Pokazuje listę wszystkich komend.
 CLEAR lub CLS	Czyści ekran konsoli.
 EXIT lub QUIT	Zamyka program.
+LOGOUT Wylogowuje z danej bazy
 VERSION	Pokazuje wersję systemu. (opcjonalne)
 ABOUT	Pokazuje informacje o autorze / projekcie. (opcjonalne)
