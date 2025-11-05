@@ -1,48 +1,22 @@
-# Kompilator i flaga
-CC = g++  # Lub g++ dla C++
-CFLAGS = -Wall -g -Iinclude  # Flagi: ostrzeżenia, debug, ścieżka do headers
+CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude
+LDFLAGS = -static-libgcc -static-libstdc++ -static -lpthread
+SRC_DIR = src
+BUILD_DIR = build
+BIN = $(BUILD_DIR)/projekt
 
-# Nazwa projektu i pliki źródłowe
-TARGET = build/projekt.exe
-SOURCES = src/main.cpp src/utils.cpp  
-OBJECTS = $(patsubst src/%.cpp,build/%.o,$(SOURCES))
+SRCS = $(shell find $(SRC_DIR) -name "*.cpp")
 
-all: $(TARGET)
+all: $(BIN)
 
-# Budowanie 
-$(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(TARGET)
+$(BIN):
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) $(SRCS) $(LDFLAGS) -o $(BIN)
+	@echo "Compilation ended: $(BIN)"
 
-# Kompilacja 
-build/%.o: src/%.cpp
-	@mkdir -p build
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Czyszczenie
-clean:
-	rm -f $(OBJECTS) $(TARGET)
-
-# PHONY 
-.PHONY: all clean
-
-
-
-# ----------------------------------------
-
-CFLAGS := -Wall -g
-
-main:
-	@mkdir -p bin
-	@$(CXX) $(CFLAGS) src/*.cpp -o bin/stupid-db
+run: all
+	./$(BIN)
 
 clean:
-	@echo Cleaning...
-	@rm -r bin
+	rm -rf $(BUILD_DIR)
 
-install:
-	@echo Installing...
-	@cp bin/stupid-db /usr/bin
-
-uninstall:
-	@echo Uninstalling...
-	@rm /usr/bin/stupid-db
+.PHONY: all run clean

@@ -1,3 +1,123 @@
 make all    -------------  kompiluje całość
+make run    -------------  kompiluje i uruchamia projekt
 build\projekt.exe      ---- uruchamia projekt
 make clean ------------- usuwa build
+
+StupidDB/
+├── src/
+│   ├── main.cpp              # Tylko CLI i główna pętla
+│   ├── database/
+│   │   ├── Database.cpp      # Zarządzanie bazami danych
+│   │   ├── Table.cpp         # Operacje na tabelach
+│   │   ├── Row.cpp           # Zarządzanie wierszami
+│   │   └── Column.cpp        # Definicje kolumn
+│   ├── parser/
+│   │   ├── CommandParser.cpp # Parsowanie komend SQL
+│   │   └── QueryExecutor.cpp # Wykonywanie zapytań
+│   ├── storage/
+│   │   ├── FileManager.cpp   # Operacje I/O
+│   │   └── Serializer.cpp    # Serializacja danych
+│   └── utils/
+│       ├── Logger.cpp        # Logowanie
+│       └── Helpers.cpp       # Funkcje pomocnicze
+|
+├── include/
+│   ├── database/
+│   │   ├── Database.h
+│   │   ├── Table.h
+│   │   ├── Row.h
+│   │   └── Column.h
+│   ├── CommandParser.h
+│   └── QueryExecutor.h
+│   ├── FileManager.h
+│   └── Serializer.h
+│   ├── Logger.h
+│   └── Helpers.h
+├── tests/                    # Testy jednostkowe
+├── db/                       # Folder na dane (gitignore)
+├── CMakeLists.txt lub Makefile           # Build system
+└── README.md
+
+
+Struktura bazy danych
+db
+|-- example_db
+|   |-- db.stdb
+|   `-- tables
+|       |-- table1.sttb
+|       |-- table2.sttb
+|       `-- table3.sttb
+`-- example_db2
+    |-- db.stdb
+    `-- tables
+        |-- table1.sttb
+        |-- table2.sttb
+        `-- table3.sttb
+
+
+Road Map
+Faza 1: Fundamenty 
+✔ Logger - system logowania
+✔ FileManager - podstawowe I/O
+✔ Column - definicje kolumn  testowanie
+✔ Row - reprezentacja wiersza testowanie
+✔ Table - podstawowe operacje CRUD testowanie
+
+Faza 2: Parser
+✔  CommandParser - parsowanie komend testowanie   
+✔  QueryExecutor  - wykonywanie zapytań  testowanie
+❌ Integracja z main.cpp
+
+Faza 3: Baza danych
+❌ Database - zarządzanie wieloma tabelami
+❌ Serializer - zapis/odczyt na dysk
+❌ Testy podstawowych operacji
+
+Faza 4: Optymalizacje 
+Indeksy dla szybkiego wyszukiwania
+WHERE clauses z operatorami
+Buforowanie i optymalizacje pamięci
+
+
+1. Zarządzanie bazami danych (Database Management)
+Komenda	Opis
+SHOWDATABASES	Wyświetla wszystkie dostępne bazy danych w folderze db/.
+USE [nazwa]	Przełącza się na wybraną bazę danych (jeśli nie istnieje – tworzy).
+DROPDATABASE [nazwa]	Usuwa całą bazę danych (z katalogiem tables).
+CHANGEDBNAME [stara] [nowa]	Zmienia nazwę bazy danych. (opcjonalne)
+
+🗂 2. Operacje na tabelach (DDL – Data Definition Language)
+Komenda	Opis
+SHOWTABLES	Wyświetla listę tabel w bieżącej bazie.
+CREATETABLE [nazwa]	Tworzy nową tabelę.
+DROPTABLE [nazwa]	Usuwa istniejącą tabelę.
+DESCRIBE [tabela] lub DESC [tabela]	Pokazuje strukturę tabeli (kolumny, typy).
+MODIFYTABLE [stara] [nowa]	Zmienia nazwę tabeli.
+ADDCOLUMN [tabela] [kolumna] [typ]	Dodaje nową kolumnę do tabeli.
+MODIFYCOLUMN [tabela] [stara] [nowa]	Zmienia nazwę istniejącej kolumny.
+DROPCOLUMN [tabela] [kolumna]	Usuwa kolumnę z tabeli.
+
+💾 3. Operacje na danych (DML – Data Manipulation Language)
+Komenda	Opis
+INSERTINTO [tabela] VALUES (...);	Wstawia nowy wiersz.
+SELECTALL  [tabela];	Wyświetla wszystkie dane z tabeli.
+SELECT [tabela] WHERE [kolumna]=[wartosc];	Filtruje dane.
+UPDATE [tabela] SET [kolumna]=[wartosc] WHERE ...;	Aktualizuje dane.
+DELETE [tabela] WHERE [kolumna]=[wartosc];	Usuwa wybrane wiersze.
+CLEARTABLE [tabela]	Usuwa wszystkie dane z tabeli (czyści ją). (opcjonalne)
+
+🔐 4. Zarządzanie użytkownikami (User Management)
+Komenda	Opis
+CHANGEUSERNAME [nowa]	Zmienia nazwę użytkownika (admina).
+CHANGEPASSWORD [nowe]	Zmienia hasło użytkownika.
+ADDUSER [nazwa] [haslo]	Dodaje nowego użytkownika. (opcjonalne)
+REMOVEUSER [nazwa]	Usuwa użytkownika. (opcjonalne)
+SHOWUSERS	Pokazuje listę użytkowników (jeśli jest system logowania). (opcjonalne)
+
+⚙️ 5. Komendy pomocnicze / systemowe
+Komenda	Opis
+HELP	Pokazuje listę wszystkich komend.
+CLEAR lub CLS	Czyści ekran konsoli.
+EXIT lub QUIT	Zamyka program.
+VERSION	Pokazuje wersję systemu. (opcjonalne)
+ABOUT	Pokazuje informacje o autorze / projekcie. (opcjonalne)
