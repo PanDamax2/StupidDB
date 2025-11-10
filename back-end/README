@@ -23,16 +23,16 @@ StupidDB/
 |
 ├── include/
 │   ├── database/
-│   │   ├── Database.h
-│   │   ├── Table.h
-│   │   ├── Row.h
-│   │   └── Column.h
-│   ├── CommandParser.h
-│   └── QueryExecutor.h
-│   ├── FileManager.h
-│   └── Serializer.h
-│   ├── Logger.h
-│   └── Helpers.h
+│   │   ├── Database.hpp
+│   │   ├── Table.hpp
+│   │   ├── Row.hpp
+│   │   └── Column.hpp
+│   ├── CommandParser.hpp
+│   └── QueryExecutor.hpp
+│   ├── FileManager.hpp
+│   └── Serializer.hpp
+│   ├── Logger.hpp
+│   └── Helpers.hpp
 ├── tests/                    # Testy jednostkowe
 ├── db/                       # Folder na dane (gitignore)
 ├── CMakeLists.txt lub Makefile           # Build system
@@ -99,11 +99,11 @@ DROPCOLUMN [tabela] [kolumna]	Usuwa kolumnę z tabeli.
 
 💾 3. Operacje na danych (DML – Data Manipulation Language)
 Komenda	Opis
-INSERTINTO [tabela] VALUES (...);	Wstawia nowy wiersz.
-SELECTALL  [tabela];	Wyświetla wszystkie dane z tabeli.
-SELECT [tabela] WHERE [kolumna]=[wartosc];	Filtruje dane.
-UPDATE [tabela] SET [kolumna]=[wartosc] WHERE ...;	Aktualizuje dane.
-DELETE [tabela] WHERE [kolumna]=[wartosc];	Usuwa wybrane wiersze.
+INSERTINTO [tabela] VALUES (...)	Wstawia nowy wiersz.
+SELECTALL  [tabela]	Wyświetla wszystkie dane z tabeli.
+SELECT [tabela] WHERE [kolumna]=[wartosc]	Filtruje dane.
+UPDATE [tabela] SET [kolumna]=[wartosc] WHERE ...	Aktualizuje dane.
+DELETE [tabela] WHERE [kolumna]=[wartosc]	Usuwa wybrane wiersze.
 CLEARTABLE [tabela]	Usuwa wszystkie dane z tabeli (czyści ją). (opcjonalne)
 
 🔐 4. Zarządzanie użytkownikami (User Management)

@@ -228,10 +228,10 @@ bool QueryExecutor::executeCreateTable(const ParsedCommand& cmd) {
         std::cout << "Nie wybrano bazy.\n";
         return false;
     }
-    if (cmd.tableName.empty() || cmd.columns.empty()) {
-        std::cout << "Podaj nazwe i kolumny: CREATETABLE nazwa (id INT, ...)\n";
-        return false;
-    }
+    // if (cmd.tableName.empty() || cmd.columns.empty()) {
+    //     std::cout << "Podaj nazwe i kolumny: CREATETABLE nazwa (id INT, ...)\n";
+    //     return false;
+    // }
     if (tableExists(cmd.tableName)) {
         std::cout << "Tabela '" << cmd.tableName << "' juz istnieje.\n";
         return false;
