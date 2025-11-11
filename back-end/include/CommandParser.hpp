@@ -48,7 +48,6 @@ struct ParsedCommand {
     std::string newName;                        // Dla RENAME operacji
     std::string columnName;                     // Dla operacji na kolumnach
     std::string columnType;                     // Typ kolumny
-    std::string username;                       // Dla zarządzania użytkownikami
     std::string password;                       // Dla zarządzania użytkownikami
     std::vector<std::string> columns;           // Lista kolumn
     std::vector<std::string> values;            // Wartości do INSERT/UPDATE

@@ -163,10 +163,10 @@ ParsedCommand CommandParser::parseCreateTable(const std::string& input) {
     ParsedCommand cmd;
     cmd.type = CommandType::CREATE_TABLE;
 
-    size_t tablePos = input.find("TABLE") + 5;
+    size_t tablePos = toUpper(input).find("TABLE") + 5;
     size_t openPos = input.find('(', tablePos);
     if (openPos == std::string::npos) {
-        cmd.type = CommandType::UNKNOWN;
+        cmd.tableName = trim(input.substr(tablePos));
         return cmd;
     }
 
@@ -193,7 +193,7 @@ ParsedCommand CommandParser::parseDropTable(const std::string& input) {
     ParsedCommand cmd;
     cmd.type = CommandType::DROP_TABLE;
 
-    size_t pos = input.find("TABLE") + 5;
+    size_t pos = toUpper(input).find("TABLE") + 5;
     cmd.tableName = trim(input.substr(pos));
     return cmd;
 }
@@ -307,8 +307,8 @@ ParsedCommand CommandParser::parseInsert(const std::string& input) {
     std::string valuesStr = input.substr(openParenPos + 1, closeParenPos - openParenPos - 1);
 
     // Znajdź nazwę tabeli (między INTO a VALUES)
-    size_t tableStart = input.find("INTO") + 4;
-    size_t tableEnd = input.find("VALUES", tableStart);
+    size_t tableStart = toUpper(input).find("INTO") + 4;
+    size_t tableEnd = toUpper(input).find("VALUES", tableStart);
     if (tableEnd == std::string::npos) tableEnd = openParenPos;
     cmd.tableName = trim(input.substr(tableStart, tableEnd - tableStart));
 
