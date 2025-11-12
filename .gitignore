@@ -2,3 +2,4 @@ back-end/build
 back-end/db
 back-end/db
 .vscode/
+node_modules/
