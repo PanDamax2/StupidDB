@@ -98,7 +98,9 @@ ParsedCommand CommandParser::parse(const std::string& input) {
         return cmd;
     }
 
+    #ifdef TEST
     Logger::warn("Parser: Nierozpoznana komenda: " + trimmedInput);
+    #endif
     return ParsedCommand();
 }
 
@@ -342,28 +344,44 @@ ParsedCommand CommandParser::parseSelect(const std::string& input) {
     cmd.type = CommandType::SELECT;
 
     std::string upper = toUpper(input);
-    size_t fromPos = upper.find("FROM");
-    if (fromPos == std::string::npos) {
+    size_t wherePos = upper.find("WHERE");
+
+    size_t selectPos = upper.find("SELECT");
+    if (selectPos == std::string::npos) {
         cmd.type = CommandType::UNKNOWN;
         return cmd;
     }
 
-    std::string colsPart = trim(input.substr(6, fromPos - 6));
-    if (colsPart != "*") {
-        cmd.columns = split(colsPart, ',');
-        for (std::string& c : cmd.columns) c = trim(c);
-    }
+    std::string afterSelect = trim(input.substr(selectPos + 6));
 
-    size_t tableStart = fromPos + 4;
-    size_t wherePos = upper.find("WHERE", tableStart);
     if (wherePos != std::string::npos) {
-        cmd.tableName = trim(input.substr(tableStart, wherePos - tableStart));
+        cmd.tableName = trim(input.substr(selectPos + 6, wherePos - (selectPos + 6)));
         std::string where = trim(input.substr(wherePos + 5));
+
+        if (where.empty()) {
+            Logger::warn("Niepoprawna skladnia: brak warunku po WHERE.");
+            cmd.type = CommandType::UNKNOWN;
+            return cmd;
+        }
+
         cmd.conditions = parseWhereClause(where);
     } else {
-        cmd.tableName = trim(input.substr(tableStart));
+        if (afterSelect.find('=') != std::string::npos) {
+            Logger::warn("Niepoprawna skladnia: brak slowa WHERE przed warunkiem.");
+            cmd.type = CommandType::UNKNOWN;
+            return cmd;
+        }
+
+        cmd.tableName = trim(afterSelect);
     }
 
+    if (cmd.tableName.empty()) {
+        Logger::warn("Niepoprawna skladnia: brak nazwy tabeli po SELECT.");
+        cmd.type = CommandType::UNKNOWN;
+        return cmd;
+    }
+
+    cmd.columns.clear(); 
     return cmd;
 }
 
@@ -374,11 +392,17 @@ ParsedCommand CommandParser::parseUpdate(const std::string& input) {
     std::string upper = toUpper(input);
     size_t setPos = upper.find("SET");
     if (setPos == std::string::npos) {
+        Logger::warn("Niepoprawna skladnia: brak słowa SET.");
         cmd.type = CommandType::UNKNOWN;
         return cmd;
     }
 
     cmd.tableName = trim(input.substr(6, setPos - 6));
+    if (cmd.tableName.empty()) {
+        Logger::warn("Niepoprawna skladnia: brak nazwy tabeli po UPDATE.");
+        cmd.type = CommandType::UNKNOWN;
+        return cmd;
+    }
 
     size_t wherePos = upper.find("WHERE", setPos);
     std::string setPart = wherePos == std::string::npos ?
@@ -386,17 +410,36 @@ ParsedCommand CommandParser::parseUpdate(const std::string& input) {
         trim(input.substr(setPos + 3, wherePos - setPos - 3));
 
     size_t eq = setPart.find('=');
-    if (eq != std::string::npos) {
-        cmd.columns.push_back(trim(setPart.substr(0, eq)));
-        std::string val = trim(setPart.substr(eq + 1));
-        if (!val.empty() && (val.front() == '\'' || val.front() == '"')) {
-            val = val.substr(1, val.size() - 2);
-        }
-        cmd.values.push_back(val);
+    if (eq == std::string::npos) {
+        Logger::warn("Niepoprawna skladnia: brak operatora '=' w części SET.");
+        cmd.type = CommandType::UNKNOWN;
+        return cmd;
     }
 
+    
+    cmd.columns.push_back(trim(setPart.substr(0, eq)));
+    std::string val = trim(setPart.substr(eq + 1));
+    if (!val.empty() && (val.front() == '\'' || val.front() == '"')) {
+        val = val.substr(1, val.size() - 2);
+    }
+    cmd.values.push_back(val);
+    
+
     if (wherePos != std::string::npos) {
+        std::string whereClause = trim(input.substr(wherePos + 5));
+        if (whereClause.empty()) {
+            Logger::warn("Niepoprawna skladnia: brak warunku po WHERE.");
+            cmd.type = CommandType::UNKNOWN;
+            return cmd;
+        }
+
         cmd.conditions = parseWhereClause(trim(input.substr(wherePos + 5)));
+    } else{
+        if (setPart.find('=') != std::string::npos && upper.find("WHERE") == std::string::npos) {
+            Logger::warn("UPDATE wymaga WHERE.");
+            cmd.type = CommandType::UNKNOWN;
+            return cmd;
+        }
     }
 
     return cmd;
@@ -407,21 +450,31 @@ ParsedCommand CommandParser::parseDelete(const std::string& input) {
     cmd.type = CommandType::DELETE;
 
     std::string upper = toUpper(input);
-    size_t fromPos = upper.find("FROM");
-    if (fromPos == std::string::npos) {
+    size_t wherePos = upper.find("WHERE");
+
+    std::string afterDelete = trim(input.substr(6));
+
+    if (wherePos == std::string::npos) {
+        Logger::warn("DELETE wymaga WHERE.");
         cmd.type = CommandType::UNKNOWN;
         return cmd;
     }
 
-    size_t tableStart = fromPos + 4;
-    size_t wherePos = upper.find("WHERE", tableStart);
-    if (wherePos != std::string::npos) {
-        cmd.tableName = trim(input.substr(tableStart, wherePos - tableStart));
-        cmd.conditions = parseWhereClause(trim(input.substr(wherePos + 5)));
-    } else {
-        cmd.tableName = trim(input.substr(tableStart));
+    cmd.tableName = trim(input.substr(6, wherePos - 6));
+    if (cmd.tableName.empty()) {
+        Logger::warn("Niepoprawna skladnia: brak nazwy tabeli po DELETE.");
+        cmd.type = CommandType::UNKNOWN;
+        return cmd;
     }
 
+    std::string whereClause = trim(input.substr(wherePos + 5));
+    if (whereClause.empty()) {
+        Logger::warn("Niepoprawna skladnia: brak warunku po WHERE.");
+        cmd.type = CommandType::UNKNOWN;
+        return cmd;
+    }
+
+    cmd.conditions = parseWhereClause(whereClause);
     return cmd;
 }
 

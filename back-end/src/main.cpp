@@ -82,7 +82,7 @@ int main() {
 
         bool success = executor.execute(cmd);
         if (!success && cmd.type != CommandType::HELP && cmd.type != CommandType::UNKNOWN) {
-            std::cout << "Operacja nie powiodla sie.\n\n";
+            Logger::error("Operacja nie powiodla sie.\n");
         }
     }
    

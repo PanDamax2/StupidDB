@@ -1,8 +1,10 @@
 #include "../../include/QueryExecutor.hpp"
+#include "../../include/Logger.hpp"
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
 #include <sstream>
+#include <filesystem> 
 
 // === KONSTRUKTOR / DESTRUKTOR ===
 QueryExecutor::QueryExecutor(const std::string& databasePath)
@@ -11,7 +13,12 @@ QueryExecutor::QueryExecutor(const std::string& databasePath)
     if (!FileManager::exists(databasePath)) {
         FileManager::createDirectory(databasePath);
     }
+    #ifdef TEST
     Logger::info("QueryExecutor: Zainicjalizowano (katalog: " + databasePath + ")");
+    #endif
+
+    std::string absolutePath = std::filesystem::absolute(databasePath).string();
+    Logger::info("Folder bazy danych: " + absolutePath);
 }
 
 QueryExecutor::~QueryExecutor() {
@@ -75,11 +82,11 @@ bool QueryExecutor::execute(const ParsedCommand& cmd) {
             return executeLogout();
 
         case CommandType::UNKNOWN:
-            std::cout << "Nieznana komenda. Wpisz HELP.\n";
+            Logger::warn("Nieznana komenda. Wpisz HELP");
             return false;
 
         default:
-            std::cout << "Komenda nie zaimplementowana.\n";
+            Logger::warn("Komenda nie zaimplementowana.\n");
             return false;
     }
 }
@@ -87,20 +94,50 @@ bool QueryExecutor::execute(const ParsedCommand& cmd) {
 // === DATABASE MANAGEMENT ===
 bool QueryExecutor::executeLogout() {
     if (currentDatabase.empty()) {
-        std::cout << "Juz nie jestes w zadnej bazie.\n\n";
+        Logger::info("Juz nie jestes w zadnej bazie.\n\n");
     } else {
         saveAllTables();
         clearCache();
         currentDatabase = "";
-        std::cout << "Wylogowano z bazy.\n\n";
+        Logger::info("Wylogowano z bazy.\n\n");
     }
     return true;
+}
+
+std::string QueryExecutor::findExactDatabaseName(const std::string& dbName) const {
+    try {
+        auto dirs = FileManager::listDirectories(databasePath);
+        
+        for (const auto& dir : dirs) {
+            if (dir == dbName) {
+                return dir; 
+            }
+        }
+        
+        std::string lowerDbName = dbName;
+        std::transform(lowerDbName.begin(), lowerDbName.end(), lowerDbName.begin(), ::tolower);
+        
+        for (const auto& dir : dirs) {
+            std::string lowerDir = dir;
+            std::transform(lowerDir.begin(), lowerDir.end(), lowerDir.begin(), ::tolower);
+            
+            if (lowerDir == lowerDbName) {
+                return dir;  
+            }
+        }
+        
+        return "";  
+    } catch (const std::exception& e) {
+        Logger::error("Blad wyszukiwania bazy: " + std::string(e.what()));
+        return "";
+    }
 }
 
 bool QueryExecutor::executeShowDatabases() {
     try {
         auto dirs = FileManager::listDirectories(databasePath);
-        std::cout << "\n=== Dostepne bazy danych ===\n";
+        std::cout << std::endl;
+        Logger::info("=== Dostepne bazy danych ===");
         if (dirs.empty()) {
             std::cout << "Brak baz danych.\n";
         } else {
@@ -118,21 +155,47 @@ bool QueryExecutor::executeShowDatabases() {
 }
 
 bool QueryExecutor::executeUseDatabase(const ParsedCommand& cmd) {
-    if (cmd.databaseName.empty()) {
-        std::cout << "Podaj nazwe bazy: USE nazwa_bazy\n";
-        return false;
+    std::string dbName = cmd.databaseName;
+    if (!dbName.empty() && (dbName.front() == '"' || dbName.front() == '\'')) {
+        if (dbName.back() == dbName.front()) {
+            dbName = dbName.substr(1, dbName.size() - 2);
+        }
     }
+    
+    std::string exactName = findExactDatabaseName(dbName);
+    
+    if (!exactName.empty()) {
+        // if (exactName != dbName) {
+        //     Logger::warn("Uwaga: Baza istnieje jako '" + exactName + "' (inna wielkosc liter)");
+        // }
+        if (currentDatabase == exactName) {
+            if (exactName != dbName) {
+                Logger::warn("Juz jestes w bazie '" + exactName + "' (inna wielkosc liter)\n\n");
+            } else {
+                Logger::warn("Juz jestes w bazie '" + exactName + "'\n\n");
+            }
+            return true;
+        }
 
-    std::string dbPath = databasePath + "/" + cmd.databaseName;
-    if (!FileManager::exists(dbPath)) {
+         if (exactName != dbName) {
+            Logger::warn("Uwaga: Baza istnieje jako '" + exactName + "' (inna wielkosc liter)");
+        }
+        
+        saveAllTables();
+        clearCache();
+        currentDatabase = exactName;
+        Logger::info("Przelaczono na baze: " + exactName);
+    } else {
+        std::string dbPath = databasePath + "/" + dbName;
         FileManager::createDirectory(dbPath);
-        std::cout << "Utworzono nowa baze: " << cmd.databaseName << "\n";
+        
+        saveAllTables();
+        clearCache();
+        currentDatabase = dbName;
+        Logger::info("Utworzono baze: " + dbName);
     }
-
-    saveAllTables();
-    clearCache();
-    currentDatabase = cmd.databaseName;
-    std::cout << "Przelaczono na baze: " << currentDatabase << "\n\n";
+    
+    std::cout << std::endl;
     return true;
 }
 
@@ -142,20 +205,28 @@ bool QueryExecutor::executeDropDatabase(const ParsedCommand& cmd) {
         return false;
     }
 
-    if (cmd.databaseName == currentDatabase) {
-        std::cout << "Nie mozesz usunac aktualnej bazy. Najpierw przejdź na inną.\n";
+    std::string dbName = cmd.databaseName;
+    if (!dbName.empty() && (dbName.front() == '"' || dbName.front() == '\'')) {
+        dbName = dbName.substr(1, dbName.size() - 2);
+    }
+
+    std::string exactName = findExactDatabaseName(dbName);
+    
+    if (exactName.empty()) {
+        std::cout << "Baza '" << dbName << "' nie istnieje.\n";
         return false;
     }
 
-    std::string dbPath = databasePath + "/" + cmd.databaseName;
-    if (!FileManager::exists(dbPath)) {
-        std::cout << "Baza '" << cmd.databaseName << "' nie istnieje.\n";
+    if (exactName == currentDatabase) {
+        std::cout << "Nie mozesz usunac aktualnej bazy. Najpierw przejdz na inna.\n";
         return false;
     }
+
+    std::string dbPath = databasePath + "/" + exactName;
 
     try {
         FileManager::removeDirectory(dbPath);
-        std::cout << "Baza '" << cmd.databaseName << "' usunieta.\n";
+        std::cout << "Baza '" << exactName << "'zostala usunieta.\n";
         return true;
     } catch (const std::exception& e) {
         Logger::error("Blad usuwania bazy: " + std::string(e.what()));
@@ -169,26 +240,31 @@ bool QueryExecutor::executeChangeDatabaseName(const ParsedCommand& cmd) {
         return false;
     }
 
-    if (cmd.oldName == currentDatabase) {
+    std::string exactOldName = findExactDatabaseName(cmd.oldName);
+    
+    if (exactOldName.empty()) {
+        std::cout << "Baza '" << cmd.oldName << "' nie istnieje.\n";
+        return false;
+    }
+
+    if (exactOldName == currentDatabase) {
         std::cout << "Nie mozesz zmienic nazwy aktualnej bazy.\n";
         return false;
     }
 
-    std::string oldPath = databasePath + "/" + cmd.oldName;
-    std::string newPath = databasePath + "/" + cmd.newName;
+    std::string exactNewName = findExactDatabaseName(cmd.newName);
+    if (!exactNewName.empty()) {
+        std::cout << "Baza '" << exactNewName << "' juz istnieje.\n";
+        return false;
+    }
 
-    if (!FileManager::exists(oldPath)) {
-        std::cout << "Baza '" << cmd.oldName << "' nie istnieje.\n";
-        return false;
-    }
-    if (FileManager::exists(newPath)) {
-        std::cout << "Baza '" << cmd.newName << "' juz istnieje.\n";
-        return false;
-    }
+    std::string oldPath = databasePath + "/" + exactOldName;
+    std::string newPath = databasePath + "/" + cmd.newName;
 
     try {
         FileManager::rename(oldPath, newPath);
-        std::cout << "Zmieniono nazwe bazy: " << cmd.oldName << " -> " << cmd.newName << "\n";
+        Logger::info("Zmieniono nazwe bazy: " + exactOldName + " -> " + cmd.newName);
+        std::cout << std::endl;
         return true;
     } catch (const std::exception& e) {
         Logger::error("Blad zmiany nazwy: " + std::string(e.what()));
@@ -199,14 +275,16 @@ bool QueryExecutor::executeChangeDatabaseName(const ParsedCommand& cmd) {
 // === DDL ===
 bool QueryExecutor::executeShowTables() {
     if (currentDatabase.empty()) {
-        std::cout << "Nie wybrano bazy. Uzyj: USE nazwa_bazy\n";
+        Logger::warn("Nie wybrano bazy. Uzyj: USE nazwa_bazy");
         return false;
     }
 
     try {
         std::string dbPath = getCurrentDatabasePath();
         auto files = FileManager::listFiles(dbPath);
-        std::cout << "\n=== Tabele w bazie '" << currentDatabase << "' ===\n";
+
+        std::cout << std::endl;
+        Logger::info("=== Tabele w bazie '" + currentDatabase + "' ===");
         int count = 0;
         for (const auto& f : files) {
             if (f.size() > 5 && f.substr(f.size() - 5) == ".sttb") {
@@ -215,7 +293,7 @@ bool QueryExecutor::executeShowTables() {
                 count++;
             }
         }
-        std::cout << "\nLiczba tabel: " << count << "\n\n";
+        std::cout << "Liczba tabel: " << count << "\n\n";
         return true;
     } catch (const std::exception& e) {
         Logger::error("Blad SHOW TABLES: " + std::string(e.what()));
@@ -225,7 +303,7 @@ bool QueryExecutor::executeShowTables() {
 
 bool QueryExecutor::executeCreateTable(const ParsedCommand& cmd) {
     if (currentDatabase.empty()) {
-        std::cout << "Nie wybrano bazy.\n";
+        Logger::warn("Nie wybrano bazy. Uzyj: USE nazwa_bazy");
         return false;
     }
     // if (cmd.tableName.empty() || cmd.columns.empty()) {
@@ -233,7 +311,7 @@ bool QueryExecutor::executeCreateTable(const ParsedCommand& cmd) {
     //     return false;
     // }
     if (tableExists(cmd.tableName)) {
-        std::cout << "Tabela '" << cmd.tableName << "' juz istnieje.\n";
+        Logger::warn("Tabela '" + cmd.tableName + "' juz istnieje.");
         return false;
     }
 
@@ -251,7 +329,7 @@ bool QueryExecutor::executeCreateTable(const ParsedCommand& cmd) {
 
         table->save();
         tables[cmd.tableName] = table;
-        std::cout << "Tabela '" << cmd.tableName << "' utworzona.\n\n";
+        Logger::info("Tabela '" + cmd.tableName + "' utworzona. \n");
         return true;
     } catch (const std::exception& e) {
         Logger::error("Blad tworzenia tabeli: " + std::string(e.what()));
@@ -262,15 +340,16 @@ bool QueryExecutor::executeCreateTable(const ParsedCommand& cmd) {
 bool QueryExecutor::executeDropTable(const ParsedCommand& cmd) {
     if (currentDatabase.empty()) return false;
     if (!tableExists(cmd.tableName)) {
-        std::cout << "Tabela '" << cmd.tableName << "' nie istnieje.\n";
+        Logger::warn("Tabela '" + cmd.tableName + "' nie istnieje.");
         return false;
     }
 
     tables.erase(cmd.tableName);
     FileManager::deleteFile(getTableFilePath(cmd.tableName));
-    std::cout << "Tabela '" << cmd.tableName << "' usunieta.\n\n";
+    Logger::info("Tabela '" + cmd.tableName + "' usunieta.");
     return true;
 }
+
 
 bool QueryExecutor::executeDescribeTable(const ParsedCommand& cmd) {
     if (currentDatabase.empty()) return false;
@@ -307,7 +386,8 @@ bool QueryExecutor::executeModifyTableName(const ParsedCommand& cmd) {
         tables.erase(cmd.oldName);
     }
 
-    std::cout << "Zmieniono nazwe: " << cmd.oldName << " -> " << cmd.newName << "\n\n";
+    Logger::info("Zmieniono nazwe tabeli: " + cmd.oldName + " -> " + cmd.newName);
+    std::cout << std::endl;
     return true;
 }
 
@@ -315,17 +395,28 @@ bool QueryExecutor::executeAddColumn(const ParsedCommand& cmd) {
     if (currentDatabase.empty()) return false;
     auto table = getTable(cmd.tableName);
     if (!table) {
-        std::cout << "Tabela '" << cmd.tableName << "' nie istnieje.\n";
+        Logger::warn("Tabela '" + cmd.tableName + "' nie istnieje.");
+        return false;
+    }
+
+    if (table->findColumnByName(cmd.columnName) != -1) {
+        Logger::warn("Kolumna '" + cmd.columnName + "' juz istnieje.");
         return false;
     }
 
     uint32_t size = 0;
     ColumnType type = parseColumnType(cmd.columnType, size);
     Column col(cmd.columnName, type, size);
-    table->createColumn(col);
+    
+    int result = table->createColumn(col);
+    if (result == -1) {
+        // Logger::warn("Blad dodawania tworzenia kolumny.");
+        return false;
+    }
+
     table->save();
 
-    std::cout << "Dodano kolumne '" << cmd.columnName << "' do '" << cmd.tableName << "'.\n\n";
+    Logger::info("Dodano kolumne '" + cmd.columnName + "' do '" + cmd.tableName + "'.\n");
     return true;
 }
 
@@ -342,7 +433,9 @@ bool QueryExecutor::executeModifyColumnName(const ParsedCommand& cmd) {
 
     table->renameColumn(idx, cmd.newName);
     table->save();
-    std::cout << "Zmieniono kolumne: " << cmd.oldName << " -> " << cmd.newName << "\n\n";
+
+    Logger::info("Zmieniono nazwe kolumny: " + cmd.oldName + " -> " + cmd.newName);
+    std::cout << std::endl;
     return true;
 }
 
@@ -353,13 +446,14 @@ bool QueryExecutor::executeDropColumn(const ParsedCommand& cmd) {
 
     int idx = table->findColumnByName(cmd.columnName);
     if (idx == -1) {
-        std::cout << "Kolumna '" << cmd.columnName << "' nie istnieje.\n";
+        Logger::warn("Kolumna '" + cmd.columnName + "' nie istnieje.");
         return false;
     }
 
     table->dropColumn(idx);
     table->save();
-    std::cout << "Usunieto kolumne '" << cmd.columnName << "'.\n\n";
+
+    Logger::info("Usunieto kolumne '" + cmd.columnName + "'.\n");
     return true;
 }
 
@@ -371,7 +465,8 @@ bool QueryExecutor::executeInsert(const ParsedCommand& cmd) {
 
     int32_t id = table->insertRowFromStrings(cmd.values);
     if (id != -1) {
-        std::cout << "Wstawiono wiersz o ID: " << id << "\n\n";
+        Logger::info("Wstawiono wiersz o ID: " + std::to_string(id));
+        std::cout << std::endl;
         return true;
     }
     return false;
@@ -395,7 +490,7 @@ bool QueryExecutor::executeSelect(const ParsedCommand& cmd) {
     if (!cmd.conditions.empty()) {
         auto ids = findMatchingRows(table, cmd.conditions);
         if (ids.empty()) {
-            std::cout << "Brak wierszy spelniajacych warunki.\n\n";
+            Logger::warn("Brak wierszy spelniajacych warunki.\n");
             return true;
         }
 
@@ -420,16 +515,16 @@ bool QueryExecutor::executeSelect(const ParsedCommand& cmd) {
 bool QueryExecutor::executeUpdate(const ParsedCommand& cmd) {
     if (currentDatabase.empty()) return false;
     if (cmd.conditions.empty()) {
-        std::cout << "UPDATE wymaga WHERE.\n";
+        Logger::warn("UPDATE wymaga WHERE.");
         return false;
     }
 
     auto table = getTable(cmd.tableName);
     if (!table) return false;
-
+     
     int colIdx = table->findColumnByName(cmd.columns[0]);
     if (colIdx == -1) {
-        std::cout << "Kolumna '" << cmd.columns[0] << "' nie istnieje.\n";
+        Logger::warn("Kolumna '" + cmd.columns[0] + "' nie istnieje.");
         return false;
     }
 
@@ -440,14 +535,14 @@ bool QueryExecutor::executeUpdate(const ParsedCommand& cmd) {
         if (table->updateCell(id, cmd.columns[0], val)) count++;
     }
 
-    std::cout << "Zaktualizowano: " << count << " wierszy.\n\n";
+    Logger::info("Zaktualizowano: " + std::to_string(count) + " wierszy.\n");
     return true;
 }
 
 bool QueryExecutor::executeDelete(const ParsedCommand& cmd) {
     if (currentDatabase.empty()) return false;
     if (cmd.conditions.empty()) {
-        std::cout << "DELETE wymaga WHERE.\n";
+        Logger::warn("DELETE wymaga WHERE.");
         return false;
     }
 
@@ -460,7 +555,7 @@ bool QueryExecutor::executeDelete(const ParsedCommand& cmd) {
         if (table->deleteRow(id)) count++;
     }
 
-    std::cout << "Usunieto: " << count << " wierszy.\n\n";
+    Logger::info("Usunieto: " + std::to_string(count) + " wierszy.\n");
     return true;
 }
 
@@ -471,7 +566,8 @@ bool QueryExecutor::executeClearTable(const ParsedCommand& cmd) {
 
     table->clearData();
     table->save();
-    std::cout << "Tabela '" << cmd.tableName << "' wyczyszczona.\n\n";
+
+    Logger::info("Tabela '" + cmd.tableName + "' wyczyszczona.\n");
     return true;
 }
 

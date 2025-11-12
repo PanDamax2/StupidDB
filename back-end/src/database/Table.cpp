@@ -22,13 +22,17 @@ Table::Table(const std::string& tableName, const std::string& tableFile): tableN
     
     header = TableHeader();
     
+    #ifdef TEST
     Logger::info("Utworzono objekt tabeli: " + tableName);
+    #endif
 }
 
 // Jeśli tabela była modyfikowana, zapisujemy zmiany
 Table::~Table() {
     if (isModified) {
+        #ifdef TEST
         Logger::info("Zapisywanie zmian w tabeli " + tableName);
+        #endif
         save();
     }
 }
@@ -37,11 +41,15 @@ Table::~Table() {
 bool Table::init() {
     // Sprawdzamy czy plik tabeli istnieje
     if (FileManager::exists(tableFile)) {
+        #ifdef TEST
         Logger::info("Odczytywanie istniejącej tabeli: " + tableName);
+        #endif
         return load();
     } else {
         // Zapisujemy pustą tabelę
+        #ifdef TEST
         Logger::info("Tworzenie nowej tabeli: " + tableName);
+        #endif
         return save(); 
     }
 }
@@ -71,7 +79,9 @@ int Table::createColumn(const Column& column) {
     header.colsCount++;
     isModified = true;
     
+    #ifdef TEST
     Logger::info("Dodano kolumne: " + column.getName() + " (" + column.typeToString() + ")");
+    #endif
     return static_cast<int>(columns.size() - 1);
 }
 
@@ -94,6 +104,9 @@ bool Table::deleteColumn(const std::string& columnName) {
     header.colsCount--;
     isModified = true;
     
+    #ifdef TEST
+    Logger::info("Usunieto kolumne: " + columnName);
+    #endif
     Logger::info("Usunieto kolumne: " + columnName);
     return true;
 }
@@ -141,7 +154,9 @@ int32_t Table::insertRow(const Row& row) {
     header.rowsCount++;
     isModified = true;
     
+    #ifdef TEST
     Logger::info("Wstawiono wiersz o ID: " + std::to_string(newID));
+    #endif
     return newID;
 }
 
@@ -235,8 +250,9 @@ bool Table::updateCell(int32_t rowID, const std::string& columnName, const CellV
     row->setCell(colIndex, newValue);
     isModified = true;
     
-    Logger::info("Zaktualizowano wiersz " + std::to_string(rowID) + 
-                ", kolumna " + columnName);
+    #ifdef TEST
+    Logger::info("Zaktualizowano wiersz " + std::to_string(rowID) + ", kolumna " + columnName);
+    #endif
     return true;
 }
 
@@ -256,7 +272,9 @@ bool Table::deleteRow(int32_t rowID) {
     header.rowsCount--;
     isModified = true;
     
+    #ifdef TEST
     Logger::info("Usunieto wiersz o ID: " + std::to_string(rowID));
+    #endif
     return true;
 }
 
@@ -289,7 +307,9 @@ bool Table::writeStructure() {
         }
         
         out.close();
+        #ifdef TEST
         Logger::info("Zapisano strukture tabeli: " + tableName);
+        #endif
         return true;
         
     } catch (const std::exception& e) {
@@ -331,7 +351,9 @@ bool Table::readStructure() {
         }
         
         in.close();
+        #ifdef TEST
         Logger::info("Odczytano strukture tabeli: " + tableName);
+        #endif
         return true;
         
     } catch (const std::exception& e) {
@@ -390,7 +412,9 @@ bool Table::writeData() {
         }
         
         out.close();
+        #ifdef TEST
         Logger::info("Zapisano dane tabeli: " + tableName);
+        #endif
         return true;
         
     } catch (const std::exception& e) {
@@ -459,7 +483,9 @@ bool Table::readData() {
         }
         
         in.close();
+        #ifdef TEST
         Logger::info("Odczytano dane tabeli: " + tableName);
+        #endif
         return true;
         
     } catch (const std::exception& e) {
@@ -489,7 +515,9 @@ void Table::setName(const std::string& name) {
     }
     tableName = name;
     isModified = true;
+    #ifdef TEST
     Logger::info("Table: Zmieniono nazwę tabeli na: " + name);
+    #endif
 }
 
 // Zmienia nazwę kolumny po indeksie (używane przy MODIFYCOLUMN)
@@ -511,9 +539,11 @@ void Table::renameColumn(int index, const std::string& newName) {
 
     columns[index].setName(newName);
     isModified = true;
-    save();  // Zapisujemy strukturę
+    save();  
+    #ifdef TEST
     Logger::info("Table: Zmieniono nazwę kolumny: indeks " + std::to_string(index) + 
                  " -> '" + newName + "'");
+    #endif
 }
 
 // Usuwa kolumnę po indeksie (używane przy DROPCOLUMN)
@@ -535,8 +565,10 @@ void Table::dropColumn(int index) {
     }
 
     isModified = true;
-    save();  // Zapisujemy strukturę i dane
+    save();  
+    #ifdef TEST
     Logger::info("Table: Usunięto kolumnę o indeksie: " + std::to_string(index));
+    #endif
 }
 
 // Czyści wszystkie dane tabeli (używane przy CLEARTABLE)
@@ -545,8 +577,10 @@ void Table::clearData() {
     header.rowsCount = 0;
     header.currentRowID = 1;  // Resetujemy ID
     isModified = true;
-    save();  // Zapisujemy pustą tabelę
+    save();  
+    #ifdef TEST
     Logger::info("Table: Wyczyszczono wszystkie dane tabeli: " + tableName);
+    #endif
 }
 
 // === WYŚWIETLANIE ===

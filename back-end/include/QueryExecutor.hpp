@@ -65,6 +65,9 @@ private:
     void showHelp();
     
     // === METODY POMOCNICZE ===
+
+    // Zwraca dokładną nazwę istniejącej bazy 
+    std::string findExactDatabaseName(const std::string& dbName) const;
     
     // ZŁaduje tabelę do cache (jeśli jeszcze nie jest załadowana)
     std::shared_ptr<Table> getTable(const std::string& tableName);

@@ -26,8 +26,9 @@ Column::Column(const std::string& name, ColumnType type, uint32_t size, bool isP
             throw std::invalid_argument("Column: VARCHAR wymaga rozmiaru > 0");
         }
     }
-    
+    #ifdef TEST
     Logger::info("Utworzono kolumne: " + name + " (" + typeToString() + ")");
+    #endif
 }
 
 // === WALIDACJA ===
@@ -67,6 +68,7 @@ bool Column::validateValue(const std::string& value) const {
             case ColumnType::VARCHAR:
                 // Sprawdzamy długość stringa
                 if (value.length() > size) {
+                    
                     Logger::warn("Column: Wartosc VARCHAR za dluga dla kolumny " + name);
                     return false;
                 }
