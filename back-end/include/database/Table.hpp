@@ -117,8 +117,6 @@ private:
     
     // Waliduje wiersz przed wstawieniem
     bool validateRow(const Row& row) const;
-    // Znajduje wolny slot dla nowego wiersza
-    int findFreeSlot() const;
     // Generuje nowy unikalny ID wiersza
     int32_t generateRowID();
 };

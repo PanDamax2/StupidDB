@@ -33,7 +33,12 @@ Table::~Table() {
         #ifdef TEST
         Logger::info("Zapisywanie zmian w tabeli " + tableName);
         #endif
-        save();
+
+        try {
+            save();
+        } catch (const std::exception& e) {
+            Logger::error("Blad zapisu w destruktorze: " + std::string(e.what()));
+        }
     }
 }
 
@@ -107,7 +112,6 @@ bool Table::deleteColumn(const std::string& columnName) {
     #ifdef TEST
     Logger::info("Usunieto kolumne: " + columnName);
     #endif
-    Logger::info("Usunieto kolumne: " + columnName);
     return true;
 }
 
@@ -366,9 +370,8 @@ bool Table::readStructure() {
 bool Table::writeData() {
     try {
         // Najpierw zapisujemy strukturę
-        if (!writeStructure()) {
-            return false;
-        }
+        if (!writeStructure()) return false;
+        
         
         // Otwieramy plik do dopisywania danych
         std::ofstream out(tableFile, std::ios::binary | std::ios::app);
@@ -433,8 +436,7 @@ bool Table::readData() {
         }
         
         // Pomijamy strukturę (header + kolumny)
-        size_t structureSize = sizeof(TableHeader) + 
-                              (MAX_COLS_COUNT * sizeof(Column::BinaryFormat));
+        size_t structureSize = sizeof(TableHeader) + (MAX_COLS_COUNT * sizeof(Column::BinaryFormat));
         in.seekg(structureSize, std::ios::beg);
         
         // Odczytujemy wiersze
@@ -499,6 +501,26 @@ bool Table::save() {
     return writeData(); // wywołuje writeStructure()
 }
 
+// bool Table::save() {
+//     std::string tempFile = tableFile + ".tmp";
+    
+//     try {
+//         if (!writeDataToFile(tempFile)) {
+//             FileManager::deleteFile(tempFile);
+//             return false;
+//         }
+        
+//         FileManager::rename(tempFile, tableFile);
+//         isModified = false;
+//         return true;
+        
+//     } catch (const std::exception& e) {
+//         Logger::error("Blad zapisu: " + std::string(e.what()));
+//         FileManager::deleteFile(tempFile);
+//         return false;
+//     }
+// }
+
 // Wczytuje tabelę z pliku 
 bool Table::load() {
     if (!readStructure()) {
@@ -539,10 +561,9 @@ void Table::renameColumn(int index, const std::string& newName) {
 
     columns[index].setName(newName);
     isModified = true;
-    save();  
+    // save();  
     #ifdef TEST
-    Logger::info("Table: Zmieniono nazwę kolumny: indeks " + std::to_string(index) + 
-                 " -> '" + newName + "'");
+    Logger::info("Table: Zmieniono nazwę kolumny: indeks " + std::to_string(index) +  " -> '" + newName + "'");
     #endif
 }
 
@@ -565,7 +586,7 @@ void Table::dropColumn(int index) {
     }
 
     isModified = true;
-    save();  
+    // save();  
     #ifdef TEST
     Logger::info("Table: Usunięto kolumnę o indeksie: " + std::to_string(index));
     #endif
@@ -575,9 +596,9 @@ void Table::dropColumn(int index) {
 void Table::clearData() {
     rows.clear();
     header.rowsCount = 0;
-    header.currentRowID = 1;  // Resetujemy ID
+    header.currentRowID = 1; 
     isModified = true;
-    save();  
+    // save();  
     #ifdef TEST
     Logger::info("Table: Wyczyszczono wszystkie dane tabeli: " + tableName);
     #endif
@@ -653,14 +674,6 @@ bool Table::validateRow(const Row& row) const {
     }
     
     return true;
-}
-
-// Generuje nowe unikalne ID wiersza
-int Table::findFreeSlot() const {
-    if (rows.size() < MAX_ROWS_COUNT) {
-        return static_cast<int>(rows.size());
-    }
-    return -1;
 }
 
 // Sprawdza, czy są jeszcze wolne sloty na nowe wiersze

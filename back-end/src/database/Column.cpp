@@ -35,7 +35,7 @@ Column::Column(const std::string& name, ColumnType type, uint32_t size, bool isP
 // Sprawdza, czy nazwa kolumny jest poprawna (niepusta, niezbyt długa)
 bool Column::isValidName() const {
     // Nazwa nie może być pusta
-    if (name.empty()) {
+    if (name.empty() || name.length() >= MAX_COL_NAME) {
         return false;
     }
     
