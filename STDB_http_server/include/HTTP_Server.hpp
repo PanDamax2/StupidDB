@@ -32,6 +32,7 @@ typedef struct {
 
 class HTTP_Server : public TCP_Server {
 private:
+    Session sessionManager;
     static std::string createHTTPHeader(HTTP_Status status, std::map<std::string, std::string> headers);
     static HTTP_Response generateError(HTTP_Status status, const std::string& message);
     static HTTP_Response getHome();
