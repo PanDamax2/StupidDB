@@ -218,7 +218,7 @@ bool QueryExecutor::executeDropDatabase(const ParsedCommand& cmd) {
     }
 
     if (exactName == currentDatabase) {
-        std::cout << "Nie mozesz usunac aktualnej bazy. Najpierw przejdz na inna.\n";
+        Logger::error("Nie mozesz zmienic nazwy aktualnej bazy na podobna inna lub bedac w niej.");
         return false;
     }
 
@@ -248,7 +248,7 @@ bool QueryExecutor::executeChangeDatabaseName(const ParsedCommand& cmd) {
     }
 
     if (exactOldName == currentDatabase) {
-        std::cout << "Nie mozesz zmienic nazwy aktualnej bazy.\n";
+        Logger::error("Nie mozesz zmienic nazwy aktualnej bazy na podobna inna lub bedac w niej.");
         return false;
     }
 
