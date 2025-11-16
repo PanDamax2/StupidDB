@@ -5,35 +5,34 @@
 #include <memory>
 
 enum class CommandType {
-    UNKNOWN,
+    UNKNOWN_,
     
     // === Database Management ===
-    SHOW_DATABASES,
-    USE_DATABASE,
-    DROP_DATABASE,
+    SHOW_DATABASES_,
+    USE_DATABASE_,
+    DROP_DATABASE_,
     
     // === DDL (Data Definition Language) ===
-    SHOW_TABLES,
-    CREATE_TABLE,
-    DROP_TABLE,
-    DESCRIBE_TABLE,
-    MODIFY_TABLE_NAME,
-    ADD_COLUMN,
-    MODIFY_COLUMN_NAME,
-    DROP_COLUMN,
+    SHOW_TABLES_,
+    CREATE_TABLE_,
+    DROP_TABLE_,
+    DESCRIBE_TABLE_,
+    MODIFY_TABLE_NAME_,
+    ADD_COLUMN_,
+    MODIFY_COLUMN_NAME_,
+    DROP_COLUMN_,
     
     // === DML (Data Manipulation Language) ===
-    INSERT,
-    SELECT_ALL,
-    SELECT,
-    UPDATE,
-    DELETE,
-    CLEAR_TABLE,
+    INSERT_,
+    SELECT_ALL_,
+    SELECT_,
+    UPDATE_,
+    DELETE_,
+    CLEAR_TABLE_,
     
     // === Utility ===
-    HELP,
-    USENONE,
-    // EXIT
+    HELP_,
+    USENONE_
 };
 
 /**
@@ -53,7 +52,7 @@ struct ParsedCommand {
     std::vector<std::string> columnTypes;       // Typy kolumn dla CREATE TABLE
     std::map<std::string, std::string> conditions; // WHERE conditions
     
-    ParsedCommand() : type(CommandType::UNKNOWN) {}
+    ParsedCommand() : type(CommandType::UNKNOWN_) {}
 };
 
 /**

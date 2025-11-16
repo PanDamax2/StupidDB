@@ -25,15 +25,15 @@ json QueryResponse::rowsToJSON() {
 std::string QueryResponse::toJSON() {
     json j;
     switch(type) {
-        case QueryType::MESSAGE:
+        case QueryType::MESSAGE_:
             j["resType"] = "MESSAGE";
             j["message"] = message;
             break;
-        case QueryType::ERROR:
+        case QueryType::ERROR_:
             j["resType"] = "ERROR";
             j["message"] = message;
             break;
-        case QueryType::TABLE:
+        case QueryType::TABLE_:
             j["resType"] = "TABLE";
             j["cols"] = cols;
             j["rows"] = rowsToJSON();
@@ -47,7 +47,7 @@ std::string QueryResponse::toJSON() {
 QueryResponse QueryResponse::genError(HTTP_Status status, std::string message) {
     QueryResponse res;
     res.status = status;
-    res.type = QueryType::ERROR;
+    res.type = QueryType::ERROR_;
     res.message = message;
 
     return res;
@@ -56,7 +56,7 @@ QueryResponse QueryResponse::genError(HTTP_Status status, std::string message) {
 QueryResponse QueryResponse::genMessage(std::string message) {
     QueryResponse res;
     res.status = HTTP_Status::OK;
-    res.type = QueryType::MESSAGE;
+    res.type = QueryType::MESSAGE_;
     res.message = message;
 
     return res;
@@ -65,7 +65,7 @@ QueryResponse QueryResponse::genMessage(std::string message) {
 QueryResponse QueryResponse::genTable(std::vector<std::string> cols, std::vector<RowValues> rows) {
     QueryResponse res;
     res.status = HTTP_Status::OK;
-    res.type = QueryType::TABLE;
+    res.type = QueryType::TABLE_;
     res.cols = cols;
     res.rows = rows;
 
@@ -97,102 +97,102 @@ QueryExecutor::~QueryExecutor() {
 QueryResponse QueryExecutor::execute(const ParsedCommand& cmd) {
     switch (cmd.type) {
         // === DATABASE MANAGEMENT ===
-        case CommandType::SHOW_DATABASES: {
+        case CommandType::SHOW_DATABASES_: {
             std::shared_lock lock(m);
             return executeShowDatabases();
         }
-        case CommandType::USE_DATABASE: {
+        case CommandType::USE_DATABASE_: {
             std::unique_lock lock(m);
             return executeUseDatabase(cmd);
         }
 
-        case CommandType::DROP_DATABASE: {
+        case CommandType::DROP_DATABASE_: {
             std::unique_lock lock(m);
             return executeDropDatabase(cmd);
         }
 
         // === DDL ===
-        case CommandType::SHOW_TABLES: {
+        case CommandType::SHOW_TABLES_: {
             std::shared_lock lock(m);
             return executeShowTables();
         }
             
-        case CommandType::CREATE_TABLE: {
+        case CommandType::CREATE_TABLE_: {
             std::unique_lock lock(m);
             return executeCreateTable(cmd);
         }
             
-        case CommandType::DROP_TABLE: {
+        case CommandType::DROP_TABLE_: {
             std::unique_lock lock(m);
             return executeDropTable(cmd);
         }
 
-        case CommandType::DESCRIBE_TABLE: {
+        case CommandType::DESCRIBE_TABLE_: {
             std::shared_lock lock(m);
             return executeDescribeTable(cmd);
         }
             
-        case CommandType::MODIFY_TABLE_NAME: {
+        case CommandType::MODIFY_TABLE_NAME_: {
             std::unique_lock lock(m);
             return executeModifyTableName(cmd);
         }
             
-        case CommandType::ADD_COLUMN: {
+        case CommandType::ADD_COLUMN_: {
             std::unique_lock lock(m);
             return executeAddColumn(cmd);
         }
 
-        case CommandType::MODIFY_COLUMN_NAME: {
+        case CommandType::MODIFY_COLUMN_NAME_: {
             std::unique_lock lock(m);
             return executeModifyColumnName(cmd);
         }
             
-        case CommandType::DROP_COLUMN: {
+        case CommandType::DROP_COLUMN_: {
             std::unique_lock lock(m);
             return executeDropColumn(cmd);
         }
 
         // === DML ===
-        case CommandType::INSERT: {
+        case CommandType::INSERT_: {
             std::unique_lock lock(m);
             return executeInsert(cmd);
         }
             
-        case CommandType::SELECT_ALL: {
+        case CommandType::SELECT_ALL_: {
             std::shared_lock lock(m);
             return executeSelectAll(cmd);
         }
            
-        case CommandType::SELECT: {
+        case CommandType::SELECT_: {
             std::shared_lock lock(m);
             return executeSelect(cmd);
         }
             
-        case CommandType::UPDATE: {
+        case CommandType::UPDATE_: {
             std::unique_lock lock(m);
             return executeUpdate(cmd);
         }
             
-        case CommandType::DELETE: {
+        case CommandType::DELETE_: {
             std::unique_lock lock(m);
             return executeDelete(cmd);
         }
             
-        case CommandType::CLEAR_TABLE: {
+        case CommandType::CLEAR_TABLE_: {
             std::unique_lock lock(m);
             return executeClearTable(cmd);
         }
 
         // === UTILITY ===
-        case CommandType::HELP:
+        case CommandType::HELP_:
             return QueryResponse::genMessage(getHelp());
         
-        case CommandType::USENONE: {
+        case CommandType::USENONE_: {
             std::unique_lock lock(m);
             return executeUseNone();
         }
 
-        case CommandType::UNKNOWN:
+        case CommandType::UNKNOWN_:
             return QueryResponse::genError(HTTP_Status::NotFound, "Nieznana komenda. Wpisz HELP");
 
         default:
@@ -582,7 +582,7 @@ QueryResponse QueryExecutor::executeSelect(const ParsedCommand& cmd) {
         return QueryResponse::genTable(colNames, rows);
     } else {
         auto cmdCopy = cmd;
-        cmdCopy.type = CommandType::SELECT_ALL;
+        cmdCopy.type = CommandType::SELECT_ALL_;
         return executeSelectAll(cmdCopy);
     }
     

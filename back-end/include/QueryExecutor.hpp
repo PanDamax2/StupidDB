@@ -23,9 +23,9 @@ using json = nlohmann::json;
 enum class HTTP_Status;
 
 enum class QueryType {
-    ERROR,
-    MESSAGE,
-    TABLE
+    ERROR_,
+    MESSAGE_,
+    TABLE_
 };
 
 class QueryResponse {
