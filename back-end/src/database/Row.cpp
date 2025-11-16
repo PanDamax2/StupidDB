@@ -13,7 +13,7 @@ Row::Row() : rowID(-1) {}
 Row::Row(int32_t rowID) : rowID(rowID) {}
 
 // Konstruktor wiersza z określonym ID i danymi
-Row::Row(int32_t rowID, const std::vector<CellValue>& cells) : rowID(rowID), cells(cells) {}
+Row::Row(int32_t rowID, const RowValues& cells) : rowID(rowID), cells(cells) {}
 
 // === OPERACJE NA KOMÓRKACH ===
 // Dodaje nową komórkę (wartość) do wiersza
@@ -185,26 +185,6 @@ std::string Row::toString() const {
     }
     
     return ss.str();
-}
-
-// Wyświetla wiersz w konsoli 
-void Row::print(const std::vector<Column>& columns) const {
-    // Wyświetlamy ID wiersza
-    std::cout << "Row " << std::setw(5) << rowID << " | ";
-    
-    // Wyświetlamy wartości komórek
-    for (size_t i = 0; i < cells.size() && i < columns.size(); i++) {
-        std::string value = cellToString(cells[i]);
-        
-        // Formatujemy z wyrównaniem
-        std::cout << std::setw(15) << value;
-        
-        if (i < cells.size() - 1) {
-            std::cout << " | ";
-        }
-    }
-    
-    std::cout << std::endl;
 }
 
 // === OPERATORY ===

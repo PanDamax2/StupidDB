@@ -8,12 +8,12 @@
 
 
 using CellValue = std::variant<int32_t, float, std::string, bool>;
-
+using RowValues = std::vector<CellValue>;
 
 class Row {
 private:
     int32_t rowID;                     // ID wiersza 
-    std::vector<CellValue> cells;      // Wartości komórek
+    RowValues cells;      // Wartości komórek
 
 public:
     // === KONSTRUKTORY ===
@@ -25,15 +25,15 @@ public:
     explicit Row(int32_t rowID);
     
     // Tworzy wiersz z wartościami
-    Row(int32_t rowID, const std::vector<CellValue>& cells);
+    Row(int32_t rowID, const RowValues& cells);
     
     // === GETTERY / SETTERY ===
     
     int32_t getRowID() const { return rowID; }
     void setRowID(int32_t id) { rowID = id; }
     
-    const std::vector<CellValue>& getCells() const { return cells; }
-    std::vector<CellValue>& getCells() { return cells; }
+    const RowValues& getCells() const { return cells; }
+    RowValues& getCells() { return cells; }
     
     size_t size() const { return cells.size(); }
     bool isEmpty() const { return cells.empty(); }
@@ -71,8 +71,6 @@ public:
     
     // Zwraca reprezentację wiersza jako string
     std::string toString() const;
-    // Wyświetla wiersz w formie tabeli
-    void print(const std::vector<Column>& columns) const;
     
     // === OPERATORY ===
     

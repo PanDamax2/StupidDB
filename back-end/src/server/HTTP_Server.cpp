@@ -1,5 +1,11 @@
+#include <memory>
+#include <exception>
+#include <string>
+
 #include "../../include/HTTP_Server.hpp"
 #include "../../include/Logger.hpp"
+#include "../../include/QueryExecutor.hpp"
+#include "../../include/CommandParser.hpp"
 
 #include "../../libs/json.hpp"
 
@@ -80,7 +86,7 @@ std::string HTTP_Server::createHTTPHeader(HTTP_Status status, std::map<std::stri
 
 HTTP_Response HTTP_Server::generateError(HTTP_Status status, const std::string& message) {
     json responseJson;
-    responseJson["error"] = static_cast<int>(status);
+    responseJson["resType"] = "ERROR";
     responseJson["message"] = message;
 
 
@@ -101,9 +107,9 @@ HTTP_Response HTTP_Server::generateError(HTTP_Status status, const std::string& 
 HTTP_Response HTTP_Server::getHome() {
     HTTP_Response response;
 
-    response.body = "<!DOCTYPE html>\
-<html><head><title>Stupid DB</title></head>\
-<body><h1>Witamy w bazie danych Stupid DB!</h1></body></html>";
+    response.body = R"(<!DOCTYPE html>
+<html><head><title>Stupid DB</title></head>
+<body><h1>Witamy w bazie danych Stupid DB!</h1></body></html>)";
 
     std::map<std::string, std::string> headers;
     headers["Server"] = SERVER_NAME;
@@ -123,24 +129,25 @@ HTTP_Response HTTP_Server::login(const std::string& body) {
         requestJson = json::parse(body);
     } catch (json::parse_error& e) {
         Logger::warn("Nieudana proba logowania: niepoprawny format JSON.");
-        return generateError(HTTP_Status::BadRequest, "Invalid JSON format in request body.");
+        return generateError(HTTP_Status::BadRequest, "Niepoprawny format JSON.");
     }
 
     if(!requestJson.contains("password")) {
         Logger::warn("Nieudana proba logowania: brak pola 'password'.");
-        return generateError(HTTP_Status::BadRequest, "Missing 'password' field in request.");
+        return generateError(HTTP_Status::BadRequest, "Brak pola hasla w zapytaniu");
     }
 
     std::string password = requestJson["password"];
     std::string token = sessionManager.createSession(password);
     if(token.empty()) {
-        return generateError(HTTP_Status::Forbitten, "Invalid password.");
+        return generateError(HTTP_Status::Forbitten, "Nieprawidlowe hasło.");
         Logger::warn("Nieudana proba logowania.");
     }
 
     Logger::info("Uzytkownik zalogowany pomyslnie.");
 
     json responseJson;
+    responseJson["resType"] = "TOKEN";
     responseJson["token"] = token;
     response.body = responseJson.dump();
 
@@ -154,26 +161,13 @@ HTTP_Response HTTP_Server::login(const std::string& body) {
     return response;
 }
 
-//  Wypierdol to co jest poniżej potem
-std::string HTTP_Server::testParser() {
-    json j;
-    j["request_type"] = "data_query";
-    j["cols"] = { "id", "name", "age", "isStudent" };
-    j["data"] = {
-        { 1, "Angel", 2137, false },
-        { 2, "Bożydar", 25, false },
-        { 3, "Klara", 35 , true}
-    };
-
-    return j.dump();
-}
 
 HTTP_Response HTTP_Server::query(HTTP_Request_Header header, const std::string& body) {
     HTTP_Response response;
 
     if(!sessionManager.isValidSession(header.headers["Token"])) {
         Logger::warn("Nieudana proba zapytania: niepoprawny token sesji.");
-        return generateError(HTTP_Status::Forbitten, "Invalid session token.");
+        return generateError(HTTP_Status::Forbitten, "Niepoprawny token sesji.");
     }
 
     json queryJson;
@@ -181,19 +175,60 @@ HTTP_Response HTTP_Server::query(HTTP_Request_Header header, const std::string& 
         queryJson = json::parse(body);
     } catch (json::parse_error& e) {
         Logger::warn("Nieudana proba zapytania: niepoprawny format JSON.");
-        return generateError(HTTP_Status::BadRequest, "Invalid JSON format in request body.");
+        return generateError(HTTP_Status::BadRequest, "Niepoprawny format JSON.");
     }
 
     if(!queryJson.contains("query")) {
         Logger::warn("Nieudana proba zapytania: brak pola 'query'.");
-        return generateError(HTTP_Status::BadRequest, "Missing 'query' field in request.");
+        return generateError(HTTP_Status::BadRequest, "Brak pola 'query'.");
     }
 
     std::string query = queryJson["query"];
+
     Logger::info("Otrzymano zapytanie: " + query);
 
-    // Wypierdol to potem. Tu będzie prawdziwy parser
-    response.body = testParser();
+    ParsedCommand cmd;
+    try {
+        cmd = CommandParser::parse(query);
+    } catch(const std::exception& e) {
+        return generateError(HTTP_Status::InternalServerError, "Blad parsowania komendy: " + std::string(e.what()));
+    }
+
+    auto executor = sessionManager.getQueryExecutor(header.headers["Token"]);
+
+    if(executor == nullptr) {
+        return generateError(HTTP_Status::InternalServerError, "Nie można pobrać egzekutora komend");
+    }
+
+    QueryResponse qres = executor->execute(cmd);
+    response.body = qres.toJSON();
+
+    std::map<std::string, std::string> headers;
+    headers["Server"] = SERVER_NAME;
+    headers["Content-Type"] = "text/json";
+    headers["Content-Length"] = std::to_string(response.body.length());
+    headers["Connection"] = "close";
+
+    response.header = createHTTPHeader(qres.status ,headers);
+    return response;
+}
+
+HTTP_Response HTTP_Server::logout(HTTP_Request_Header header) {
+    HTTP_Response response;
+
+    if(!sessionManager.isValidSession(header.headers["Token"])) {
+        Logger::warn("Nieudana proba wylogowania: niepoprawny token sesji.");
+        return generateError(HTTP_Status::Forbitten, "Niepoprawny token sesji.");
+    }
+
+    sessionManager.destroySession(header.headers["Token"]);
+    Logger::info("Uzytkownik wylogowany pomyslnie.");
+
+    json responseJson;
+    responseJson["resType"] = "MESSAGE";
+    responseJson["message"] = "Uzytkownik wylogowany pomyslnie";
+
+    response.body = responseJson.dump();
 
     std::map<std::string, std::string> headers;
     headers["Server"] = SERVER_NAME;
@@ -205,19 +240,35 @@ HTTP_Response HTTP_Server::query(HTTP_Request_Header header, const std::string& 
     return response;
 }
 
-HTTP_Response HTTP_Server::logout(HTTP_Request_Header header) {
+HTTP_Response HTTP_Server::changePassword(HTTP_Request_Header header, const std::string& body) {
     HTTP_Response response;
-
     if(!sessionManager.isValidSession(header.headers["Token"])) {
-        Logger::warn("Nieudana proba wylogowania: niepoprawny token sesji.");
-        return generateError(HTTP_Status::Forbitten, "Invalid session token.");
+        Logger::warn("Nieudana proba zmiany hasla: niepoprawny token sesji.");
+        return generateError(HTTP_Status::Forbitten, "Niepoprawny token sesji.");
+    } 
+
+    json requestJson;
+
+    try {
+        requestJson = json::parse(body);
+    } catch (json::parse_error& e) {
+        Logger::warn("Nieudana proba zmiany hasla: niepoprawny format JSON.");
+        return generateError(HTTP_Status::BadRequest, "Niepoprawny format JSON.");
     }
 
-    sessionManager.destroySession(header.headers["Token"]);
-    Logger::info("Uzytkownik wylogowany pomyslnie.");
+    if(!requestJson.contains("password")) {
+        Logger::warn("Nieudana proba zmiany hasla: brak pola 'password'.");
+        return generateError(HTTP_Status::BadRequest, "Brak pola hasla w zapytaniu");
+    }
+    
+    if(!sessionManager.changePassword(requestJson["password"])) {
+        Logger::warn("Nieudana proba zmiany hasla: nie mozna odczytac pliku.");
+        return generateError(HTTP_Status::InternalServerError, "Nie mozna odczytac pliku.");
+    }
 
     json responseJson;
-    responseJson["message"] = "Logged out successfully.";
+    responseJson["resType"] = "MESSAGE";
+    responseJson["message"] = "Zmiana hasła przebiegła pomyślnie";
 
     response.body = responseJson.dump();
 
@@ -264,8 +315,10 @@ void HTTP_Server::handleHTTPRequest(socket_t client_fd) {
         httpResponse = query(requestHeader, requestBody);
     } else if(requestHeader.path == "/logout") {
         httpResponse = logout(requestHeader);
+    } else if(requestHeader.path == "/changePassword") {
+        httpResponse = changePassword(requestHeader, requestBody);
     } else {
-        httpResponse = generateError(HTTP_Status::NotFound, "The requested resource was not found on this server.");
+        httpResponse = generateError(HTTP_Status::NotFound, "Nie znaleziono.");
     }
 
     std::string response = httpResponse.header;

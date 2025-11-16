@@ -1,92 +1,48 @@
-#include <iostream>
 #include <string>
+#include <filesystem>
+#include <cstring>
 
+#include "../include/HTTP_Server.hpp"   
 #include "../include/Logger.hpp"
-#include "../include/FileManager.hpp"
-#include "../test/Test.hpp"
-#include "../include/database/Table.hpp"      
-#include "../include/database/Column.hpp"     
-#include "../include/database/Row.hpp"   
-#include "../include/CommandParser.hpp"
-#include "../include/QueryExecutor.hpp"     
 
+namespace fs = std::filesystem;
 
+int main(int argc, char **argv) {
+    int port = DEFAULT_PORT;
 
-int main() {
+    // Argument parsing
+    if(argc > 1) {
+        char *prevValue = nullptr;
+        for(int i = 1; i < argc; i++) {
+            if(prevValue && strcmp(prevValue, "--path") == 0) {
+                std::string path = std::string(argv[i]);
+                if(fs::exists(path)) {
+                    fs::current_path(path);
+                } else {
+                    Logger::error("Podany katalog nie istnieje");
+                    return -1;
+                }
+            }
+
+            if(prevValue && strcmp(prevValue, "--port") == 0) {
+                try {
+                    port = std::stoi(argv[i]);
+                } catch(...) {
+                    Logger::error("Port musi być liczbą całkowitą");
+                    return -1;
+                }
+            }
+
+            prevValue = argv[i];
+        }
+    }    
+
     // Start log
     Logger::info("StupidDB uruchomiony");
     showWelcomeBanner();
 
-    // -------------------------------------------
-
-    // blackout zwiększyć essssss
-
-    // showHelp();
-
-    
-
-
-    // -------------------------------------------
-
-    
-    // testFileManager();
-    // testLogger();
-    
-
-
-    // Główna pętla
-    // std::string input;
-    // while (true) {
-    //     std::cout << "> ";
-    //     std::getline(std::cin, input);
-
-    //     // Pomijamy puste linie i linie z samymi spacjami i tabami
-    //     if (input.empty() || input.find_first_not_of(" \t\n\r") == std::string::npos) continue;
-    //     // Obsługa komend postawowych
-    //     if (input == "exit")  { Logger::info("Zamykanie StupidDB"); break; }
-    //     if (input == "help")  { showHelp();           continue; }
-    //     if (input == "clear") { system("cls||clear"); continue; }
-
-       
-    //     Logger::warn("Nieznana komenda: " + input);
-    //     std::cout << "Wpisz 'help' aby zobaczyc dostepne komendy.\n";
-    // }
-
-    QueryExecutor executor;
-    CommandParser parser;
-
-    std::string input;
-    while (true) {
-        std::cout << (executor.getCurrentDatabase().empty() ? "StupidDB" : executor.getCurrentDatabase()) << "> ";
-        std::cout.flush();
-
-        if (!std::getline(std::cin, input)) {
-            std::cout << "\nDo widzenia!\n";
-            break;
-        }
-
-        if (input.empty()) continue;
-
-        ParsedCommand cmd;
-        try {
-            cmd = parser.parse(input);
-        } catch (const std::exception& e) {
-            std::cout << "Blad: " << e.what() << "\n\n";
-            continue;
-        }
-
-        if (cmd.type == CommandType::EXIT) {
-            std::cout << "Zamykanie...\n";
-            break;
-        }
-
-        bool success = executor.execute(cmd);
-        if (!success && cmd.type != CommandType::HELP && cmd.type != CommandType::UNKNOWN) {
-            Logger::error("Operacja nie powiodla sie.\n");
-        }
-    }
-   
-
+    HTTP_Server server(port);
+    server.start();
 
     return 0;
 }

@@ -1,5 +1,5 @@
-back-end/build
-back-end/db
-back-end/db
+build/
+db
 .vscode/
 node_modules/
+password.txt

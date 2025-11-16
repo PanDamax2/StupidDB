@@ -11,7 +11,6 @@ enum class CommandType {
     SHOW_DATABASES,
     USE_DATABASE,
     DROP_DATABASE,
-    CHANGE_DATABASE_NAME,
     
     // === DDL (Data Definition Language) ===
     SHOW_TABLES,
@@ -33,8 +32,8 @@ enum class CommandType {
     
     // === Utility ===
     HELP,
-    LOGOUT,
-    EXIT
+    USENONE,
+    // EXIT
 };
 
 /**
@@ -78,7 +77,6 @@ private:
     static ParsedCommand parseShowDatabases(const std::string& input);
     static ParsedCommand parseUse(const std::string& input);
     static ParsedCommand parseDropDatabase(const std::string& input);
-    static ParsedCommand parseChangeDbName(const std::string& input);
     
     // Parsery DDL
     static ParsedCommand parseShowTables(const std::string& input);

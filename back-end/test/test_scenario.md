@@ -116,9 +116,6 @@ Usuwa tabelę `pupils`.
 **SHOWTABLES**  
 Powinno być pusto w bazie `schooldb`.
 
-**CHANGEDBNAME schooldb school_db_new**  
-Zmień nazwę bazy danych.
-
 **SHOWDATABASES**  
 Sprawdź, że jest `school_db_new`.
 
@@ -138,8 +135,8 @@ Sprawdź, że `school_db_new` zniknęła.
 **HELP**  
 Jeszcze raz — powinna być pomoc.
 
-**LOGOUT**  
-Wyloguj z bazy (jeśli zaimplementowane).
+**USENONE**  
+Nie używaj żadnej bazdy danych.
 
 **EXIT**  
 Zamknij program.

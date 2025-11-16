@@ -83,8 +83,8 @@ Buforowanie i optymalizacje pamięci
 Komenda	Opis
 SHOWDATABASES	Wyświetla wszystkie dostępne bazy danych w folderze db/.
 USE [nazwa]	Przełącza się na wybraną bazę danych (jeśli nie istnieje – tworzy).
+USENONE - Nie używaj żadnej bazy danych.
 DROPDATABASE [nazwa]	Usuwa całą bazę danych (z katalogiem tables).
-CHANGEDBNAME [stara] [nowa]	Zmienia nazwę bazy danych. (opcjonalne)
 
 🗂 2. Operacje na tabelach (DDL – Data Definition Language)
 Komenda	Opis
@@ -106,19 +106,8 @@ UPDATE [tabela] SET [kolumna]=[wartosc] WHERE ...	Aktualizuje dane.
 DELETE [tabela] WHERE [kolumna]=[wartosc]	Usuwa wybrane wiersze.
 CLEARTABLE [tabela]	Usuwa wszystkie dane z tabeli (czyści ją). (opcjonalne)
 
-🔐 4. Zarządzanie użytkownikami (User Management)
-Komenda	Opis
-CHANGEUSERNAME [nowa]	Zmienia nazwę użytkownika (admina).
-CHANGEPASSWORD [nowe]	Zmienia hasło użytkownika.
-ADDUSER [nazwa] [haslo]	Dodaje nowego użytkownika. (opcjonalne)
-REMOVEUSER [nazwa]	Usuwa użytkownika. (opcjonalne)
-SHOWUSERS	Pokazuje listę użytkowników (jeśli jest system logowania). (opcjonalne)
-
 ⚙️ 5. Komendy pomocnicze / systemowe
 Komenda	Opis
 HELP	Pokazuje listę wszystkich komend.
-CLEAR lub CLS	Czyści ekran konsoli.
-EXIT lub QUIT	Zamyka program.
-LOGOUT Wylogowuje z danej bazy
-VERSION	Pokazuje wersję systemu. (opcjonalne)
-ABOUT	Pokazuje informacje o autorze / projekcie. (opcjonalne)
+EXIT lub QUIT	Zamyka program.(Działa tylko w terminalu)
+

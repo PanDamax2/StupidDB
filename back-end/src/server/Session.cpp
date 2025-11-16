@@ -82,24 +82,29 @@ std::string Session::createSession(const std::string& password) {
     }
 
     std::string token = token_b64url();
-    activeSessions.push_back(token);
+    parserSessions[token] = std::make_shared<QueryExecutor>();
     return token;
 }
 
 bool Session::isValidSession(const std::string& token) const {
     std::shared_lock lock(m);
-    for(const auto& activeToken : activeSessions) {
-        if(activeToken == token) {
-            return true;
-        }
-    }
-    return false;
+    return parserSessions.find(token) != parserSessions.end();
 }
 
 void Session::destroySession(const std::string& token) {
     std::unique_lock lock(m);
-    activeSessions.erase(
-        std::remove(activeSessions.begin(), activeSessions.end(), token),
-        activeSessions.end()
-    );
+    parserSessions.erase(token);
+}
+
+bool Session::changePassword(const std::string& password) {
+    std::unique_lock lock(m);
+    return FileManager::writeFile("password.txt", hashPassword(password));
+}
+
+std::shared_ptr<QueryExecutor> Session::getQueryExecutor(const std::string& token) {
+    std::shared_lock lock(m);
+    if(parserSessions.find(token) == parserSessions.end()) {
+        return nullptr;
+    }
+    return parserSessions[token];
 }

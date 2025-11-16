@@ -30,9 +30,6 @@ ParsedCommand CommandParser::parse(const std::string& input) {
     if (startsWith(upper, "DROPDATABASE ") || startsWith(upper, "DROP DATABASE ")) {
         return parseDropDatabase(trimmedInput);
     }
-    if (startsWith(upper, "CHANGEDBNAME ")) {
-        return parseChangeDbName(trimmedInput);
-    }
 
     // === DDL ===
     if (upper == "SHOWTABLES" || upper == "SHOW TABLES") {
@@ -86,15 +83,15 @@ ParsedCommand CommandParser::parse(const std::string& input) {
         cmd.type = CommandType::HELP;
         return cmd;
     }
-    if (upper == "EXIT" || upper == "QUIT") {
-        ParsedCommand cmd;
-        cmd.type = CommandType::EXIT;
-        return cmd;
-    }
+    // if (upper == "EXIT" || upper == "QUIT") {
+    //     ParsedCommand cmd;
+    //     cmd.type = CommandType::EXIT;
+    //     return cmd;
+    // }
 
-    if (upper == "LOGOUT") {
+    if (upper == "USENONE") {
         ParsedCommand cmd;
-        cmd.type = CommandType::LOGOUT;
+        cmd.type = CommandType::USENONE;
         return cmd;
     }
 
@@ -137,22 +134,6 @@ ParsedCommand CommandParser::parseDropDatabase(const std::string& input) {
     return cmd;
 }
 
-ParsedCommand CommandParser::parseChangeDbName(const std::string& input) {
-    ParsedCommand cmd;
-    cmd.type = CommandType::CHANGE_DATABASE_NAME;
-
-    size_t start = input.find(' ') + 1;
-    std::string rest = trim(input.substr(start));
-    std::vector<std::string> parts = split(rest, ' ');
-
-    if (parts.size() >= 2) {
-        cmd.oldName = parts[0];
-        cmd.newName = parts[1];
-    } else {
-        cmd.type = CommandType::UNKNOWN;
-    }
-    return cmd;
-}
 
 // === DDL ===
 ParsedCommand CommandParser::parseShowTables(const std::string&) {

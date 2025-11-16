@@ -501,25 +501,6 @@ bool Table::save() {
     return writeData(); // wywołuje writeStructure()
 }
 
-// bool Table::save() {
-//     std::string tempFile = tableFile + ".tmp";
-    
-//     try {
-//         if (!writeDataToFile(tempFile)) {
-//             FileManager::deleteFile(tempFile);
-//             return false;
-//         }
-        
-//         FileManager::rename(tempFile, tableFile);
-//         isModified = false;
-//         return true;
-        
-//     } catch (const std::exception& e) {
-//         Logger::error("Blad zapisu: " + std::string(e.what()));
-//         FileManager::deleteFile(tempFile);
-//         return false;
-//     }
-// }
 
 // Wczytuje tabelę z pliku 
 bool Table::load() {
@@ -604,55 +585,17 @@ void Table::clearData() {
     #endif
 }
 
-// === WYŚWIETLANIE ===
-//  Wypisuje strukturę kolumn tabel
-void Table::printStructure() const {
-    std::cout << "\n=== Struktura tabeli: " << tableName << " ===\n";
-    std::cout << "Liczba kolumn: " << header.colsCount << "\n\n";
-    
-    for (size_t i = 0; i < columns.size(); i++) {
-        std::cout << "[" << i << "] " << columns[i].toString() << "\n";
-    }
-    std::cout << std::endl;
-}
 
-// Wypisuje zawartość tabeli w formie czytelnej tabelki
-void Table::printData(size_t limit) const {
-    std::cout << "\n=== Dane tabeli: " << tableName << " ===\n";
-    std::cout << "Liczba wierszy: " << header.rowsCount << "\n\n";
+ // === Wysyłannie danych do serializacji ===
+// Zwraca strukturę tabeli
+std::vector<RowValues> Table::getStructure() const {
+    std::vector<RowValues>  stringColsRows;
     
-    // Wyświetlamy nagłówek
-    std::cout << std::setw(10) << "Row ID" << " | ";
-    for (const auto& col : columns) {
-        std::cout << std::setw(15) << col.getName() << " | ";
+    for(size_t i = 0; i < columns.size(); i++) {
+        stringColsRows.push_back({ columns[i].toString() });
     }
-    std::cout << "\n" << std::string(80, '-') << "\n";
-    
-    // Wyświetlamy wiersze
-    size_t count = 0;
-    for (const auto& row : rows) {
-        if (limit > 0 && count >= limit) break;
-        
-        row.print(columns);
-        count++;
-    }
-    
-    if (limit > 0 && rows.size() > limit) {
-        std::cout << "... (wyswietlono " << limit << " z " << rows.size() << " wierszy)\n";
-    }
-    
-    std::cout << std::endl;
-}
 
-// Wypisuje statystyki tabeli
-void Table::printStats() const {
-    std::cout << "\n=== Statystyki tabeli: " << tableName << " ===\n";
-    std::cout << "Plik: " << tableFile << "\n";
-    std::cout << "Kolumny: " << header.colsCount << " / " << MAX_COLS_COUNT << "\n";
-    std::cout << "Wiersze: " << header.rowsCount << " / " << MAX_ROWS_COUNT << "\n";
-    std::cout << "Nastepny ID: " << header.currentRowID << "\n";
-    std::cout << "Zmodyfikowana: " << (isModified ? "TAK" : "NIE") << "\n";
-    std::cout << std::endl;
+    return stringColsRows;
 }
 
 // === METODY POMOCNICZE ===

@@ -3,12 +3,15 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 #include "Column.hpp"
 #include "Row.hpp"
 
 // Maksymalne wartości
 #define MAX_COLS_COUNT 32
 #define MAX_ROWS_COUNT 1048576
+
+using TableData = std::pair<std::vector<std::string>, std::vector<RowValues>>;
 
 // === KONSTRUKTOR HEADERA ===
 struct TableHeader {
@@ -103,14 +106,10 @@ public:
     // Odczytuje całą tabelę (struktura + dane)
     bool load();
     
-    // === WYŚWIETLANIE ===
-    
-    // Wyświetla strukturę tabeli
-    void printStructure() const;
-    // Wyświetla zawartość tabeli
-    void printData(size_t limit = 0) const;
-    // Wyświetla statystyki tabeli
-    void printStats() const;
+   // === Wysyłannie danych do serializacji ===
+
+    // Zwraca structurę tabeli
+    std::vector<RowValues> getStructure() const;; 
     
 private:
     // === METODY POMOCNICZE ===

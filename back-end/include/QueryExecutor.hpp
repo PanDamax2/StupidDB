@@ -5,6 +5,8 @@
 #include <map>
 #include <memory>
 #include <cstdint>
+#include <mutex>
+#include <shared_mutex>
 
 #include "CommandParser.hpp"
 #include "./database/Table.hpp"
@@ -12,14 +14,44 @@
 #include "./database/Row.hpp"
 #include "FileManager.hpp"
 #include "Logger.hpp"
+#include "HTTP_Status.hpp"
 
+#include "../libs/json.hpp"
+
+using json = nlohmann::json;
+
+enum class HTTP_Status;
+
+enum class QueryType {
+    ERROR,
+    MESSAGE,
+    TABLE
+};
+
+class QueryResponse {
+private:
+    json rowsToJSON();
+public:
+    HTTP_Status status;
+    QueryType type;
+    std::string message;
+    std::vector<std::string> cols;
+    std::vector<RowValues> rows;
+
+    std::string toJSON();
+    // Helpery
+    static QueryResponse genError(HTTP_Status status, std::string message);
+    static QueryResponse genMessage(std::string message);
+    static QueryResponse genTable(std::vector<std::string> cols, std::vector<RowValues> rows);
+
+};
 
 class QueryExecutor {
 private:
     std::string databasePath;                              // Ścieżka do katalogu baz danych
     std::string currentDatabase;                           // Nazwa aktualnej bazy
     std::map<std::string, std::shared_ptr<Table>> tables;  // Cache otwartych tabel
-    
+    static std::shared_mutex m;                    // Mutex do synchronizacji dostępu   
 public:
     // === KONSTRUKTOR ===
     explicit QueryExecutor(const std::string& databasePath = "db");
@@ -29,7 +61,7 @@ public:
     
     // === GŁÓWNA FUNKCJA WYKONUJĄCA ===
     // Wykonuje sparsowaną komendę
-    bool execute(const ParsedCommand& cmd);
+    QueryResponse execute(const ParsedCommand& cmd);
     
     // === GETTERY / SETTERY ===
     const std::string getCurrentDatabase() const { return currentDatabase; }
@@ -37,32 +69,31 @@ public:
     
 private:
     // === DATABASE MANAGEMENT ===
-    bool executeShowDatabases();
-    bool executeUseDatabase(const ParsedCommand& cmd);
-    bool executeDropDatabase(const ParsedCommand& cmd);
-    bool executeChangeDatabaseName(const ParsedCommand& cmd);
-    bool executeLogout();
+    QueryResponse executeShowDatabases();
+    QueryResponse executeUseDatabase(const ParsedCommand& cmd);
+    QueryResponse executeDropDatabase(const ParsedCommand& cmd);
+    QueryResponse executeUseNone();
 
     // === DDL (Data Definition Language) ===
-    bool executeShowTables();
-    bool executeCreateTable(const ParsedCommand& cmd);
-    bool executeDropTable(const ParsedCommand& cmd);
-    bool executeDescribeTable(const ParsedCommand& cmd);
-    bool executeModifyTableName(const ParsedCommand& cmd);
-    bool executeAddColumn(const ParsedCommand& cmd);
-    bool executeModifyColumnName(const ParsedCommand& cmd);
-    bool executeDropColumn(const ParsedCommand& cmd);
+    QueryResponse executeShowTables();
+    QueryResponse executeCreateTable(const ParsedCommand& cmd);
+    QueryResponse executeDropTable(const ParsedCommand& cmd);
+    QueryResponse executeDescribeTable(const ParsedCommand& cmd);
+    QueryResponse executeModifyTableName(const ParsedCommand& cmd);
+    QueryResponse executeAddColumn(const ParsedCommand& cmd);
+    QueryResponse executeModifyColumnName(const ParsedCommand& cmd);
+    QueryResponse executeDropColumn(const ParsedCommand& cmd);
 
     // === DML (Data Manipulation Language) ===
-    bool executeInsert(const ParsedCommand& cmd);
-    bool executeSelectAll(const ParsedCommand& cmd);
-    bool executeSelect(const ParsedCommand& cmd);
-    bool executeUpdate(const ParsedCommand& cmd);
-    bool executeDelete(const ParsedCommand& cmd);
-    bool executeClearTable(const ParsedCommand& cmd);
+    QueryResponse executeInsert(const ParsedCommand& cmd);
+    QueryResponse executeSelectAll(const ParsedCommand& cmd);
+    QueryResponse executeSelect(const ParsedCommand& cmd);
+    QueryResponse executeUpdate(const ParsedCommand& cmd);
+    QueryResponse executeDelete(const ParsedCommand& cmd);
+    QueryResponse executeClearTable(const ParsedCommand& cmd);
 
     // === UTILITY ===
-    void showHelp();
+    std::string getHelp();
     
     // === METODY POMOCNICZE ===
 
