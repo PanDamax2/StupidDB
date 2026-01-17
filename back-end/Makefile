@@ -1,5 +1,5 @@
 # -------- Konfiguracja wspólna --------
-CXXFLAGS ?= -std=c++17 -Wall -Wextra
+CXXFLAGS ?= -I/mingw64/include -std=c++17 -Wall -Wextra
 SRC_DIR  := src
 BUILD_DIR:= build
 DLL_FILES_DIR := dll_files
@@ -38,7 +38,7 @@ ifeq ($(TARGET),windows)
   # Winsock + (opcjonalnie) pthread w MinGW + libsodium
   LDLIBS := -lsodium -lwinpthread -lws2_32
   # statyczne libgcc/libstdc++ (można wyłączyć: make TARGET=windows STATIC=0)
-  LDFLAGS += -static-libgcc -static-libstdc++ -static -DWIN32_LEAN_AND_MEAN -DNOMINMAX
+  LDFLAGS += -L/mingw64/lib -static-libgcc -static-libstdc++ -static -DWIN32_LEAN_AND_MEAN -DNOMINMAX
 endif
 
 ifeq ($(TARGET),windows)

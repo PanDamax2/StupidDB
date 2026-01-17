@@ -11,6 +11,12 @@
 
 using json = nlohmann::json;
 
+void addCORSHeaders(std::map<std::string, std::string>& headers) {
+    headers["Access-Control-Allow-Origin"] = "http://localhost:5173";
+    headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS";
+    headers["Access-Control-Allow-Headers"] = "Content-Type, Token";
+}
+
 HTTP_Request_Header::HTTP_Request_Header(const std::string& rawHeader) {
     size_t pos = 0;
     size_t lineEnd = rawHeader.find("\r\n");
@@ -95,9 +101,12 @@ HTTP_Response HTTP_Server::generateError(HTTP_Status status, const std::string& 
 
     std::map<std::string, std::string> headers;
     headers["Server"] = SERVER_NAME;
-    headers["Content-Type"] = "text/json";
+    headers["Content-Type"] = "application/json";
+    addCORSHeaders(headers);
     headers["Content-Length"] = std::to_string(response.body.length());
     headers["Connection"] = "close";
+
+    
  
     response.header = createHTTPHeader(status, headers);
     return response;
@@ -113,7 +122,8 @@ HTTP_Response HTTP_Server::getHome() {
 
     std::map<std::string, std::string> headers;
     headers["Server"] = SERVER_NAME;
-    headers["Content-Type"] = "text/html";
+    headers["Content-Type"] = "application/json";
+    addCORSHeaders(headers);
     headers["Content-Length"] = std::to_string(response.body.length());
     headers["Connection"] = "close";
  
@@ -153,9 +163,11 @@ HTTP_Response HTTP_Server::login(const std::string& body) {
 
     std::map<std::string, std::string> headers;
     headers["Server"] = SERVER_NAME;
-    headers["Content-Type"] = "text/json";
+    headers["Content-Type"] = "application/json";
     headers["Content-Length"] = std::to_string(response.body.length());
     headers["Connection"] = "close";
+
+    addCORSHeaders(headers);
 
     response.header = createHTTPHeader(HTTP_Status::OK, headers);
     return response;
@@ -205,7 +217,8 @@ HTTP_Response HTTP_Server::query(HTTP_Request_Header header, const std::string& 
 
     std::map<std::string, std::string> headers;
     headers["Server"] = SERVER_NAME;
-    headers["Content-Type"] = "text/json";
+    headers["Content-Type"] = "application/json";
+addCORSHeaders(headers);
     headers["Content-Length"] = std::to_string(response.body.length());
     headers["Connection"] = "close";
 
@@ -232,7 +245,8 @@ HTTP_Response HTTP_Server::logout(HTTP_Request_Header header) {
 
     std::map<std::string, std::string> headers;
     headers["Server"] = SERVER_NAME;
-    headers["Content-Type"] = "text/json";
+    headers["Content-Type"] = "application/json";
+addCORSHeaders(headers);
     headers["Content-Length"] = std::to_string(response.body.length());
     headers["Connection"] = "close";
 
@@ -274,7 +288,8 @@ HTTP_Response HTTP_Server::changePassword(HTTP_Request_Header header, const std:
 
     std::map<std::string, std::string> headers;
     headers["Server"] = SERVER_NAME;
-    headers["Content-Type"] = "text/json";
+    headers["Content-Type"] = "application/json";
+addCORSHeaders(headers);
     headers["Content-Length"] = std::to_string(response.body.length());
     headers["Connection"] = "close";
 
@@ -285,25 +300,48 @@ HTTP_Response HTTP_Server::changePassword(HTTP_Request_Header header, const std:
 void HTTP_Server::handleHTTPRequest(socket_t client_fd) {
     char buffer[BUFFER_SIZE] = {0};
     int bytesRead = recv(client_fd, buffer, BUFFER_SIZE, 0);
-    std::string bytesReadString = std::string(buffer, bytesRead);
+
+    if (bytesRead < 0) {
+        Logger::error("Blad podczas odbierania danych od klienta.");
+        return;
+    }
+
+    if (bytesRead == 0) {
+        Logger::warn("Klient rozlaczyl się bez wysłania danych.");
+        return;
+    }
+
+    std::string bytesReadString(buffer, bytesRead);
 
     int endStr = bytesReadString.find("\r\n\r\n");
+    if (endStr == std::string::npos) {
+        Logger::warn("Niepoprawny format zapytania HTTP: brak konca naglowka");
+        HTTP_Response errResp = generateError(HTTP_Status::BadRequest, "Niepoprawny format zapytania HTTP");
+        std::string response = errResp.header + errResp.body;
+        send(client_fd, response.c_str(), response.size(), 0);
+        return;
+    }
+
     std::string requestHeaderStr = bytesReadString.substr(0, endStr);
     std::string requestBody = bytesReadString.substr(endStr + 4);
 
     HTTP_Request_Header requestHeader(requestHeaderStr);
 
-    if(bytesRead < 0) {
-        Logger::error("Blad podczas odbierania danych od klienta.");
-        return;
-    }
-
-    if(bytesRead == 0) {
-        Logger::warn("Klient rozlaczyl się bez wysłania danych.");
+    if (requestHeader.method == "OPTIONS") {
+        HTTP_Response response;
+        std::map<std::string, std::string> headers;
+        headers["Server"] = SERVER_NAME;
+        headers["Content-Length"] = "0";
+        headers["Connection"] = "close";
+        addCORSHeaders(headers);
+        response.header = createHTTPHeader(HTTP_Status::OK, headers);
+        std::string res = response.header;
+        send(client_fd, res.c_str(), res.size(), 0);
         return;
     }
 
     Logger::info("Otrzymano zadanie: " + requestHeader.method + " " + requestHeader.path);
+
     HTTP_Response httpResponse;
 
     //Routing
@@ -325,6 +363,6 @@ void HTTP_Server::handleHTTPRequest(socket_t client_fd) {
     if(requestHeader.method != "HEAD") {
         response += httpResponse.body;
     }
-    
+
     send(client_fd, response.c_str(), response.size(), 0);
 }
