@@ -3,3 +3,4 @@ db
 .vscode/
 node_modules/
 password.txt
+package-lock.json

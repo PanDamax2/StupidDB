@@ -55,7 +55,7 @@ export default function LoginPage() {
         <h2 className="text-2xl font-bold text-white mb-6 text-center">Logowanie</h2>
 
         <span className="block text-gray-400 text-center text-md mb-3">
-          Hasło to: <b>admin</b>
+          Domyślne hasło to: <b>admin</b>
         </span>
 
         <form className="space-y-4" onSubmit={handleSubmit}>

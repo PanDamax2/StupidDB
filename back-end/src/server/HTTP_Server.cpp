@@ -313,7 +313,7 @@ void HTTP_Server::handleHTTPRequest(socket_t client_fd) {
 
     std::string bytesReadString(buffer, bytesRead);
 
-    int endStr = bytesReadString.find("\r\n\r\n");
+    auto endStr = bytesReadString.find("\r\n\r\n");
     if (endStr == std::string::npos) {
         Logger::warn("Niepoprawny format zapytania HTTP: brak konca naglowka");
         HTTP_Response errResp = generateError(HTTP_Status::BadRequest, "Niepoprawny format zapytania HTTP");

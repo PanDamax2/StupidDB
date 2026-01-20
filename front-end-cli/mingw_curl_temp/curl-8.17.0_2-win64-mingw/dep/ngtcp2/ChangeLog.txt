@@ -1,0 +1,917 @@
+commit 01b05ba10d9560ff144e5cb9d2f7d3155906f31c
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-17
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-17
+
+    Bump package and library versions
+
+commit 76ba48283be9ebc8fb33c8a2bb09e1977db13aed
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-17
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-17
+
+    Update AUTHORS
+
+commit 2d2729a5095245c6fd5596eb8395b9075eaddcd5
+Merge: 3aa9e02d 54a8e4ad
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-16
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-16
+
+    Merge pull request #1843 from ngtcp2/relax-timer-handling-further
+    
+    Relax the timer handling further
+
+commit 54a8e4ad04038cce3f7eb7306916ed1e07f2afcf
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-16
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-16
+
+    Relax the timer handling further
+    
+    Relax the timer handling further by explicitly stating that
+    ngtcp2_conn_handle_expiry can be called multiple times before
+    ngtcp2_conn_writev_stream, so that an application does not need to
+    stop the timer when it expires because sometimes stopping timer may
+    incur the additional overhead.
+
+commit 3aa9e02d13b0837244fd0ffc51099dda75595978
+Merge: 989ba62f a45d3983
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-16
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-16
+
+    Merge pull request #1842 from ngtcp2/bump-aws-lc
+    
+    Bump aws-lc to v1.62.0
+
+commit a45d39830798489024f75340445089cdb49ef3f8
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-16
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-16
+
+    Bump aws-lc to v1.62.0
+
+commit 989ba62f9d49e294bc6080c080835e47b7d2090e
+Merge: f083b077 7a877dd0
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-16
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-16
+
+    Merge pull request #1841 from ngtcp2/bump-boringssl
+    
+    Bump boringssl
+
+commit 7a877dd003a2bf77a717f759375c0c64f40cbc4a
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-16
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-16
+
+    Bump boringssl
+
+commit f083b077d38ddff33035800ee4b91b867c242ead
+Merge: 90460cd6 117599ed
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-16
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-16
+
+    Merge pull request #1839 from nak3/bump-libressl-4.2.0
+    
+    Bump LibreSSL to 4.2.0
+
+commit 90460cd6c4a4aebace6c5ff016a465c803f365ce
+Merge: f717cefc f767895f
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-14
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-14
+
+    Merge pull request #1840 from ngtcp2/relax-timer-handling
+    
+    Relax the timer handling
+
+commit f767895fb84844ab1f41187273ce96d4370658f4
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-14
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-14
+
+    Relax the timer handling
+    
+    Explicitly state that after ngtcp2_conn_handle_expiry, an application
+    may call ngtcp2_conn_read_pkt before calling
+    ngtcp2_conn_writev_stream.
+
+commit 117599ed9d98704becf15b48502d4e796e8e6ae3
+Author:     Kenjiro Nakayama <nakayamakenjiro@gmail.com>
+AuthorDate: 2025-10-14
+Commit:     Kenjiro Nakayama <nakayamakenjiro@gmail.com>
+CommitDate: 2025-10-14
+
+    Apply gemini-code-assist suggestions
+
+commit 808c04c941cca6f97a02410cec84449af449a686
+Author:     Kenjiro Nakayama <nakayamakenjiro@gmail.com>
+AuthorDate: 2025-10-14
+Commit:     Kenjiro Nakayama <nakayamakenjiro@gmail.com>
+CommitDate: 2025-10-14
+
+    Bump LibreSSL to 4.2.0
+
+commit f717cefc78826b83c57a8c0757c27d72152d87a2
+Merge: e58b3b7c baf0e809
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-13
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-13
+
+    Merge pull request #1838 from ngtcp2/server-optimize-write
+    
+    Server optimize write
+
+commit e58b3b7cba425784c24b0b163b75eba2af35de18
+Merge: f9276ac6 c8bd90ed
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-13
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-13
+
+    Merge pull request #1837 from ngtcp2/dependabot/github_actions/github/codeql-action-4
+    
+    build(deps): bump github/codeql-action from 3 to 4
+
+commit baf0e809f66c91ea3adad4ac76fa7ed04506aa57
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-13
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-13
+
+    server: Prioritize read event
+    
+    Prioritize read event over other events so that we can read more
+    packets before write.  Revert this if this is not a good optimization.
+
+commit c26131c696088d148af96942a4eda47805db7eed
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-13
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-13
+
+    server: Defer write to next event loop
+    
+    Defer write to the next event loop so that we can coalesce several
+    timeout events that happen rapid succession, and read more packets to
+    decide what we can send next.  We documented that
+    ngtcp2_conn_writev_stream should be called right after
+    ngtcp2_conn_handle_expiry, but it seems like we can call other APIs
+    like ngtcp2_conn_read_pkt.  Experiment it in this example servers and
+    gather more information.
+
+commit c8bd90ed979fe71dd3856927d741bfb8ddf67513
+Author:     dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
+AuthorDate: 2025-10-13
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-13
+
+    build(deps): bump github/codeql-action from 3 to 4
+    
+    Bumps [github/codeql-action](https://github.com/github/codeql-action) from 3 to 4.
+    - [Release notes](https://github.com/github/codeql-action/releases)
+    - [Changelog](https://github.com/github/codeql-action/blob/main/CHANGELOG.md)
+    - [Commits](https://github.com/github/codeql-action/compare/v3...v4)
+    
+    ---
+    updated-dependencies:
+    - dependency-name: github/codeql-action
+      dependency-version: '4'
+      dependency-type: direct:production
+      update-type: version-update:semver-major
+    ...
+    
+    Signed-off-by: dependabot[bot] <support@github.com>
+
+commit f9276ac6199108e8d2788978f7bebf56cf88529e
+Merge: 6adf0bea 14b7a315
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-12
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-12
+
+    Merge pull request #1836 from ngtcp2/examples-inc-num-recv-pkts
+    
+    examples: Increase number of packets to read
+
+commit 14b7a315170d9469efd94a7510b669de33264435
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-12
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-12
+
+    examples: Increase number of packets to read
+    
+    It turns out that the limit of 10 packets per event loop is too small,
+    that prevents an endpoint from consuming ACKs and other control frames
+    (e.g., MAX_STREAM_DATA, MAX_STREAMS), resulting in the loss of
+    throughput.  This change increases maximum number of packets to read
+    to 64.  Meanwhile, BBR is very sensitive to event loop tick because
+    its GSO burst is limited to 1ms window.  For BBR, keep reading packets
+    until 1ms is passed or 64 packets are read.
+
+commit 6adf0bea28ff2d425400d279f4780e919b3493f4
+Merge: 4499f9c9 13967dd0
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-12
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-12
+
+    Merge pull request #1835 from ngtcp2/cc-min-set-quantum
+    
+    cc: Increase minimum send_quantum to 10
+
+commit 13967dd03b4d58f0af22df9be6166e4a864ec977
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-12
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-12
+
+    cc: Increase minimum send_quantum to 10
+    
+    The previous value of minimum value 2 is too small because usually an
+    event loop cannot keep up the 1ms tick and UDP send call is too
+    expensive.  RFC 9002 says that the burst should be limited to the
+    initial congestion window, which is 10 packets, which suggests that 10
+    packets burst is acceptable for the traditional loss based congestion
+    controller with pacing over smoothed RTT and CWND.  10 is still
+    conservative against full GSO buffer.
+
+commit 4499f9c921f858f9d10c67a3b97cf567f66e1b9e
+Merge: 6fdb042d cccfe10c
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-12
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-12
+
+    Merge pull request #1834 from ngtcp2/clarify-ngtcp2-max-udp-payload-size
+    
+    Clarify NGTCP2_MAX_UDP_PAYLOAD_SIZE
+
+commit cccfe10c9d0019dbd2e52e0d074b289b64e3a051
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-12
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-12
+
+    Clarify NGTCP2_MAX_UDP_PAYLOAD_SIZE
+    
+    Add text to NGTCP2_MAX_UDP_PAYLOAD_SIZE how to extend the default UDP
+    datagram payload size.
+
+commit 6fdb042d3e6a89142eb592733dc5abbf66438e8b
+Merge: 7b4c341c 733f713b
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-12
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-12
+
+    Merge pull request #1833 from ngtcp2/max-tx-udp-payload-size-macro
+    
+    Add NGTCP2_MAX_TX_UDP_PAYLOAD_SIZE macro
+
+commit 733f713bc5578e5a4e1de947bb334acaaaf57e38
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-12
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-12
+
+    Add NGTCP2_MAX_TX_UDP_PAYLOAD_SIZE macro
+    
+    Add NGTCP2_MAX_TX_UDP_PAYLOAD_SIZE macro to define the maximum UDP
+    datagram payload size 65527.  Use this value where appropriate.
+    Replace the usage of NGTCP2_HARD_MAX_UDP_PAYLOAD_SIZE with
+    NGTCP2_MAX_TX_UDP_PAYLOAD_SIZE.
+    
+    It is unfortunate that we defined NGTCP2_MAX_UDP_PAYLOAD_SIZE as 1200,
+    which should have been named NGTCP2_MIN_UDP_PAYLOAD_SIZE because that
+    is the minimum UDP datagram size that QUIC requires.  We cannot change
+    its name because that is a breaking change.
+
+commit 7b4c341c01c39ebfbf8ce23f441b6580c38f7c9c
+Merge: a93315f0 071c17f2
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-11
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-11
+
+    Merge pull request #1832 from ngtcp2/deprecate-NGTCP2_MAX_PMTUD_UDP_PAYLOAD_SIZE
+    
+    Deprecate NGTCP2_MAX_PMTUD_UDP_PAYLOAD_SIZE
+
+commit 071c17f27f7b6493f1edf1a388dc6a19ba787c9f
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-11
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-11
+
+    Deprecate NGTCP2_MAX_PMTUD_UDP_PAYLOAD_SIZE
+    
+    NGTCP2_MAX_PMTUD_UDP_PAYLOAD_SIZE is not used, and PMTU Discovery is
+    not not capped to this value anymore.
+
+commit a93315f0d4f110ac805ae2a690a8053c94892b6f
+Merge: 147883e6 205f73cf
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-11
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-11
+
+    Merge pull request #1831 from ngtcp2/make-aggregate_pkt2-more-configurable
+    
+    More app controllable ngtcp2_conn_write_aggregate_pkt2
+
+commit 205f73cf0b6d288817d3a234189877f31166583d
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-11
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-11
+
+    More app controllable ngtcp2_conn_write_aggregate_pkt2
+    
+    This change makes ngtcp2_conn_write_aggregate_pkt2 more controllable
+    by an application by removing buffer size clamping and pacing timer
+    updates, so that the application can experiment its own GSO buffer
+    strategy and number of GSO writes per event loop.
+    
+    Capping buflen is simplified because ngtcp2_conn_get_send_quantum() >=
+    2 * ngtcp2_conn_get_path_max_tx_udp_payload_size().
+
+commit 147883e618af4c428532c5bc00dd09dff87faadf
+Merge: d0e1097c dacebda5
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-11
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-11
+
+    Merge pull request #1830 from ngtcp2/bbr-clamp-initial-pacing-interval
+    
+    bbr: Clamp initial pacing interval
+
+commit dacebda5eb741392d9553e34de36f574038b9b0a
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-11
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-11
+
+    bbr: Clamp initial pacing interval
+
+commit d0e1097cbcce0164357c4ebf5e4da4d2aaf20c6c
+Merge: b6f2c756 54300a76
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-11
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-11
+
+    Merge pull request #1829 from ngtcp2/cc-pacing-rate
+    
+    cc: Compute pacing interval and send_quantum
+
+commit 54300a7687bb4fef1152c1f1ce2f82c1167feac3
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-11
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-11
+
+    cc: Compute pacing interval and send_quantum
+    
+    Compute pacing interval and send_quantum as we do in BBR.  Previously
+    we always set send_quantum to 64k, which is too bursty.  It might be
+    good for benchmark on loopback but has severe impact on real internet
+    traffic due to extra burstiness.  The idea is send 1ms worth of data
+    at once.  This change does not affect 1 connection throughput as long
+    as event loop keeps up to this 1ms interval.
+
+commit b6f2c756afd041239f0ff738f266ba7693575bd6
+Merge: d8c5a228 5dd5f7aa
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-07
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-07
+
+    Merge pull request #1828 from ngtcp2/ngtcp2_conn_get_stream_user_data
+    
+    Add ngtcp2_conn_get_stream_user_data
+
+commit 5dd5f7aa8c537a7ee65b486aa6f073eabf189e54
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-07
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-07
+
+    Add ngtcp2_conn_get_stream_user_data
+
+commit d8c5a2281b5af258b8570d1076b152d93722d304
+Merge: 19acf9a8 38ce4d4f
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-05
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-05
+
+    Merge pull request #1825 from ngtcp2/examples-gso-burst
+    
+    examples: Add gso-burst option
+
+commit 38ce4d4fedd59a7b6583c16022576b62b971fef7
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-05
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-05
+
+    examples: Add gso-burst option
+
+commit 19acf9a88576df344b8f004dec1de47db7b36ff6
+Merge: 0e418c08 72f7483c
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-05
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-05
+
+    Merge pull request #1824 from ngtcp2/ngtcp2_conn_write_aggregate_pkt2
+    
+    Add ngtcp2_conn_write_aggregate_pkt2
+
+commit 72f7483cfdc2fb133aa035ec70aafb35f0641823
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-05
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-05
+
+    Add ngtcp2_conn_write_aggregate_pkt2
+    
+    ngtcp2_conn_write_aggregate_pkt2 accepts pkt_num which controls the
+    maximum number of packets to write.  The initial design of
+    ngtcp2_conn_write_aggregate_pkt had this parameter, but was omitted
+    because I thought adjusting the buffer size was enough to control it.
+    But this does not give me the precise control in some cases, for
+    example, ngtcp2_conn_get_path_max_tx_udp_payload_size() * 2 <=
+    ngtcp2_conn_get_max_tx_udp_payload_size().  So if I specify
+    ngtcp2_conn_get_max_tx_udp_payload_size as the buffer size to limit
+    the number of packet to 1, but we might get 2 packets written sized
+    ngtcp2_conn_get_path_max_tx_udp_payload_size() each.
+
+commit 0e418c080b229436a2f5bb7658efca70cd1762f5
+Merge: 7e113f91 760e8eaf
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-05
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-05
+
+    Merge pull request #1823 from ngtcp2/remove-cc_ack-prior_bytes_in_flight
+    
+    Remove unused ngtcp2_cc_ack.prior_bytes_in_flight
+
+commit 760e8eaf4ca3eab68871942116594fc09b8dd35b
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-05
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-05
+
+    Remove unused ngtcp2_cc_ack.prior_bytes_in_flight
+
+commit 7e113f9171d1c01993f2ba641d91f09bbf1efc08
+Merge: 3a6e78cc 32c2ce54
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-05
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-05
+
+    Merge pull request #1822 from ngtcp2/pass-cc_ack-to-congestion-event
+    
+    Pass ngtcp2_cc_ack to CC on_congestion_event
+
+commit 32c2ce5433218abf2751aa6fdde5ca905cf22a0f
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-05
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-05
+
+    Pass ngtcp2_cc_ack to CC on_congestion_event
+    
+    Pass ngtcp2_cc_ack to CC on_congestion_event so that it can have all
+    information after ACK processing.  Move ECN verification after packet
+    loss detection to achieve it.  This simplifies the congestion event
+    handling in BBR.
+
+commit 3a6e78cc50ad39839ecfb191358b3f6e6314218e
+Merge: 12727e86 a330faa7
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-05
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-05
+
+    Merge pull request #1821 from ngtcp2/cc_ack-largest_pkt_sent_ts
+    
+    Use solely cc_ack.largest_pkt_sent_ts and remove largest_pkt_sent_ts
+
+commit a330faa70bde997cd42e4cfc112f7dbfea2a2ef9
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-05
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-05
+
+    Use solely cc_ack.largest_pkt_sent_ts and remove largest_pkt_sent_ts
+
+commit 12727e86467f8d5486289e87797c7875739a2ebc
+Merge: e577cf95 1014dd33
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-05
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-05
+
+    Merge pull request #1820 from ngtcp2/on-ack-recv
+    
+    Make sure that CC on_ack_recv when ACK is received
+
+commit 1014dd332c86ceb609ecab33365f138c82c9d6ff
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-05
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-05
+
+    Make sure that CC on_ack_recv when ACK is received
+
+commit e577cf95d1782c3e703a727aa13264e460c3c06e
+Merge: 57c26ade b8b3c424
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-05
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-05
+
+    Merge pull request #1818 from ngtcp2/revert-1812-examples-no-gso-buffer-limit
+    
+    Revert "examples: Limit tx buffer for non-GSO case"
+
+commit b8b3c42470cb907ce053b8a2bc9dfcc896a51bce
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-05
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-05
+
+    Revert "examples: Limit tx buffer for non-GSO case"
+
+commit 57c26ade606e10d40cfff44ed6b6e8a397947606
+Merge: 73f81310 570ba388
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-05
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-05
+
+    Merge pull request #1817 from ngtcp2/cc-on-ack-recv
+    
+    Always call CC on_ack_recv
+
+commit 570ba38843ab4029a1a053ee108c363a5163cf50
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-04
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-05
+
+    Always call CC on_ack_recv
+    
+    Always call CC on_ack_recv so that bbr_handle_recovery is called for
+    ACK that triggers the congestion event.
+
+commit 73f81310b666d8545130d6c79bea1ecd5fb14720
+Merge: 76db1378 36730366
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-04
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-04
+
+    Merge pull request #1816 from ngtcp2/bbr-temp-rs
+    
+    bbr: Avoid modifying ngtcp2_rs on packet loss
+
+commit 367303668bb3d775357a475568c631d7febc3558
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-04
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-04
+
+    bbr: Avoid modifying ngtcp2_rs on packet loss
+    
+    Previously, ngtcp2_rs conn->rst->rs is modified when a packet is lost.
+    But this is a bit strange, and it is the only place we do in BBR.
+    This change uses new temporary variable ngtcp2_rs on packet loss
+    without modifying the existing conn->rst->rs.  With this change, we
+    observed improvements in the cross traffic test in
+    quic-interop-runner.
+
+commit 76db137804df4a31600d41ca34572ac37964a098
+Merge: 166c8d66 22901fd4
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-04
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-04
+
+    Merge pull request #1815 from ngtcp2/bump-openssl
+    
+    Bump openssl to v3.6.0
+
+commit 22901fd4ba09c9dffa562dbebe05f2552f33c962
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-03
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-03
+
+    Bump openssl to v3.6.0
+
+commit 166c8d66399a7ebbdda1e2ca5fb30d37823854d7
+Merge: 39268999 c4564656
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-03
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-03
+
+    Merge pull request #1814 from ngtcp2/reduce-hard-max-udp-payload-size
+    
+    Reduce NGTCP2_HARD_MAX_UDP_PAYLOAD_SIZE to 64k
+
+commit c4564656576f0d964387be38ddb1acfd67370d1f
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-03
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-03
+
+    Reduce NGTCP2_HARD_MAX_UDP_PAYLOAD_SIZE to 65527
+    
+    I cannot not recall why I set it to 16MiB which is too large.  It is
+    completely safe to set the maximum size to 65527 which is theoretical
+    limit of IPv6 packet size.
+
+commit 3926899986f5c2f87f259ae17f8fa7debc220fd1
+Author:     Michal Kovac <68376920+mk185147@users.noreply.github.com>
+AuthorDate: 2025-10-03
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-03
+
+    Replace POPCNT-based ispow2 with portable bitwise implementation to prevent illegal instruction crashes (#1811)
+
+commit c4d3057e7046f3cbd5210e40ca34540246e6f4cd
+Merge: 25951a32 29fb62cb
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-03
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-03
+
+    Merge pull request #1813 from ngtcp2/cubic-acked_bytes-without-mod
+    
+    cubic: Compute remainder of "acked_bytes" without modulo
+
+commit 29fb62cb6398c0277b8a39d9f2435292bd80a1fd
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-03
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-03
+
+    cubic: Compute remainder of "bytes_acked" without modulo
+
+commit 25951a32894092721ee6fd2352b313dfb594c589
+Merge: cfdd88f9 24e3c5a7
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-03
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-03
+
+    Merge pull request #1812 from ngtcp2/examples-no-gso-buffer-limit
+    
+    examples: Limit tx buffer for non-GSO case
+
+commit 24e3c5a750a3e513e441de791f8d0899710ff69c
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-03
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-03
+
+    examples: Limit tx buffer for non-GSO case
+    
+    For non-GSO case, limit tx buffer to
+    ngtcp2_conn_get_max_tx_udp_payload_size which is most likely 1 packet.
+    This helps small queue and bandwidth simulated environment to test
+    congestion controllers for cross traffic because QUIC tends to send
+    too much and causes losses.  This change makes connection slower for
+    other cases, but one cannot expect good performance without GSO in
+    QUIC, so it is fine for now.
+
+commit cfdd88f9a65f200273177f493a207fea990e8138
+Merge: 8e6dbc4d aa679497
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-10-01
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-10-01
+
+    Merge pull request #1807 from ngtcp2/update-bbr
+    
+    Update bbr
+
+commit aa6794972063ce5fc66f2271db921fe46e31f6e4
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-01
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-01
+
+    Rename bbr_inflight_longterm_from_lost_packet
+    
+    Rename bbr_inflight_longterm_from_lost_packet to bbr_inflight_at_loss.
+
+commit 6e5292615b80164c431bef67083630e2b1b99709
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-01
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-01
+
+    Update rate sample calculation to upstream draft
+
+commit c7372959985c09f958f14f867f699ec86ae8d791
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-10-01
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-10-01
+
+    Update bytes_in_flight before calling ngtcp2_rst_on_pkt_sent
+    
+    Update bytes_in_flight before calling ngtcp2_rst_on_pkt_sent so that
+    we only increment bytes_in_flight once.
+
+commit 8e6dbc4d1f50feb4e4dec17f6bdf3c5b81086fd1
+Merge: 9b1287b2 3722e607
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-09-29
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-09-29
+
+    Merge pull request #1804 from ngtcp2/copilot/fix-e5182af3-d2a2-450c-a1f3-b23152eab462
+    
+    Fix typos in documentation and comments
+
+commit 3722e6074cb2ab75dcbde2bc5edd4a4a7d0e187a
+Author:     copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+AuthorDate: 2025-09-29
+Commit:     copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+CommitDate: 2025-09-29
+
+    Fix typos in documentation and comments
+    
+    Co-authored-by: tatsuhiro-t <404610+tatsuhiro-t@users.noreply.github.com>
+
+commit fe7cd909e952ca30187254c65a98be62daa9c287
+Author:     copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+AuthorDate: 2025-09-29
+Commit:     copilot-swe-agent[bot] <198982749+Copilot@users.noreply.github.com>
+CommitDate: 2025-09-29
+
+    Initial plan
+
+commit 9b1287b2d1e38b593b3bd35c24ad05fa639255d4
+Merge: 6d9a7b77 95c59ad1
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-09-29
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-09-29
+
+    Merge pull request #1803 from ngtcp2/strm-int-fin
+    
+    Make ngtcp2_stream.fin of type int
+
+commit 95c59ad17b529c1c6998ac123db05fd07e4472df
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-09-28
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-09-29
+
+    Make ngtcp2_stream.fin of type int
+    
+    Make ngtcp2_stream.fin of type int so that we do not need any casts
+    from integer operation.  The size of ngtcp2_stream does not change on
+    64-bit systems.
+
+commit 6d9a7b776bbfb1a43e2039fa3d9029a5eface63a
+Merge: 1c93a6a9 4b84db01
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-09-27
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-09-27
+
+    Merge pull request #1802 from ngtcp2/remove-redundant-semicolon
+    
+    Remove redundant semicolon
+
+commit 4b84db0123c535d4de852971ab329b3b5d201508
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-09-27
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-09-27
+
+    Remove redundant semicolon
+
+commit 1c93a6a9dc05e9876584b2b2a05c54df05ade411
+Merge: 4e10eb5b 7db111e2
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-09-27
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-09-27
+
+    Merge pull request #1801 from ngtcp2/no-payload-size-shaping-padding
+    
+    Initial packets padding with no_tx_udp_payload_size_shaping
+
+commit 7db111e2ba324a3a34a9a76169e61b8967a1de14
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-09-26
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-09-27
+
+    Initial packets padding with no_tx_udp_payload_size_shaping
+    
+    If ngtcp2_settings.no_tx_udp_payload_size_shaping is nonzero, pad
+    Initial packets to ngtcp2_settings.max_tx_udp_payload_size rather than
+    1200.  This would help if the initial is large with PQC.  It also
+    enables more packet aggregation (GSO).
+    
+    Previously, ngtcp2_settings.max_tx_udp_payload_size has no defined
+    minimum.  But we implicitly assume it is at least 1200.  Update
+    documentation and add assertion to reflect this.
+
+commit 4e10eb5b7ef3ce124d89cbd00ce90f93610cae23
+Merge: 0a9dbe87 70709fb4
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-09-25
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-09-25
+
+    Merge pull request #1800 from ngtcp2/iterators
+    
+    examples: Use std::ranges::begin and std::ranges::end consistently
+
+commit 70709fb4262c69d69ae576fe6d4618dde4a348f5
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-09-25
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-09-25
+
+    examples: Use std::ranges::begin and std::ranges::end consistently
+
+commit 0a9dbe8777bc4804e960e8ca282e0362ca3e2d5e
+Merge: afcba550 d987b2d4
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-09-24
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-09-24
+
+    Merge pull request #1799 from ngtcp2/revert-1798-partially
+    
+    Revert #1798 partially
+
+commit d987b2d4299af84de3596e69e7fa845aa6849308
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-09-24
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-09-24
+
+    Revert #1798 partially
+    
+    ngtcp2_ksl.h is used from C++ code which requires explicit cast.
+
+commit afcba5508d6ba5d82e2288e96ba29f654ca03d0e
+Merge: a7a04e89 c2aac8f4
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2025-09-24
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2025-09-24
+
+    Merge pull request #1798 from ngtcp2/remove-redundant-casts
+    
+    Remove redundant casts
+
+commit c2aac8f47a11e85ccc0213a785c12648268860f5
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-09-24
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-09-24
+
+    Remove redundant casts
+
+commit a7a04e89d0e3228ff961f76e8f57b42bdef860c5
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2025-09-24
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2025-09-24
+
+    Bump package version
