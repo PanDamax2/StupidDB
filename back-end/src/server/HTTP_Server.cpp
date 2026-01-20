@@ -122,7 +122,7 @@ HTTP_Response HTTP_Server::getHome() {
 
     std::map<std::string, std::string> headers;
     headers["Server"] = SERVER_NAME;
-    headers["Content-Type"] = "application/json";
+    headers["Content-Type"] = "text/html";
     addCORSHeaders(headers);
     headers["Content-Length"] = std::to_string(response.body.length());
     headers["Connection"] = "close";
