@@ -10,7 +10,7 @@ make:
 run_front-end-cli:
 	$(MAKE) -C $(FRONTEND_CLI_DIR) run
 
-run_back-end-cli:
+run_back-end:
 	$(MAKE) -C $(BACKEND_DIR) run
 
 clean:
