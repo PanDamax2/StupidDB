@@ -36,7 +36,7 @@ ifeq ($(TARGET),windows)
   # jak i natywnie w MSYS2/MinGW (tam też CXX to x86_64-w64-mingw32-g++).
   CXX ?= x86_64-w64-mingw32-g++
   # Winsock + (opcjonalnie) pthread w MinGW + libsodium
-  LDLIBS := -lws2_32 -lcurl -lwinpthread
+  LDLIBS := -lws2_32 -lwinpthread -Wl,-Bdynamic -lcurl
   # statyczne libgcc/libstdc++ (można wyłączyć: make TARGET=windows STATIC=0)
   LDFLAGS += -static-libgcc -static-libstdc++ -static -DWIN32_LEAN_AND_MEAN -DNOMINMAX -Wl,-Bstatic
 endif
