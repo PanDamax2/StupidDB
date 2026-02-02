@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <sstream>
 #include <filesystem>
+#include <chrono>
+#include <iostream>
 
 using json = nlohmann::json;
 
@@ -41,6 +43,10 @@ std::string QueryResponse::toJSON() {
     }
 
     return j.dump();
+}
+
+long long unixTimestampInUs() {
+    return (long long)std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 // === HELPERY DLA ODPOWIEDZI ===
@@ -95,6 +101,7 @@ QueryExecutor::~QueryExecutor() {
 
 // === GŁÓWNA FUNKCJA WYKONUJĄCA ===
 QueryResponse QueryExecutor::execute(const ParsedCommand& cmd) {
+    long long startTime = unixTimestampInUs();
     switch (cmd.type) {
         // === DATABASE MANAGEMENT ===
         case CommandType::SHOW_DATABASES_: {
@@ -155,12 +162,16 @@ QueryResponse QueryExecutor::execute(const ParsedCommand& cmd) {
         // === DML ===
         case CommandType::INSERT_: {
             std::unique_lock lock(m);
-            return executeInsert(cmd);
+            QueryResponse res =  executeInsert(cmd);
+            Logger::info("Czas wykonania INSERT: " + std::to_string(unixTimestampInUs() - startTime) + " us");
+            return res;
         }
             
         case CommandType::SELECT_ALL_: {
             std::shared_lock lock(m);
-            return executeSelectAll(cmd);
+            QueryResponse res = executeSelectAll(cmd);
+            Logger::info("Czas wykonania SELECT ALL: " + std::to_string(unixTimestampInUs() - startTime) + " us");
+            return res;
         }
            
         case CommandType::SELECT_: {
@@ -198,6 +209,7 @@ QueryResponse QueryExecutor::execute(const ParsedCommand& cmd) {
         default:
             return QueryResponse::genError(HTTP_Status::NotFound, "Komenda nie zaimplementowana");
     }
+
 }
 
 // === DATABASE MANAGEMENT ===

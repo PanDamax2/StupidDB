@@ -1,4 +1,4 @@
-﻿# StupidDB – Prosta baza danych w C++
+# StupidDB – Prosta baza danych w C++
 
 **Autorzy:** 39066, 39483
 **Data:** Luty 2026
